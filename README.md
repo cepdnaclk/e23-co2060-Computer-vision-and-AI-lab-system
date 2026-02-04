@@ -1,57 +1,71 @@
-___
-# DELETE THIS INSTRUCTIONS AND ADD AN INTRODUCTION ABOUT YOUR PROJECT
-___
+# Computer Vision & AI Lab Management System
 
-# eYY-co2060-project-template
+![Project Status](https://img.shields.io/badge/Status-In%20Development-orange?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
+![Team](https://img.shields.io/badge/Team-Bug%20Slayer-red?style=flat-square)
 
-This is a sample repository you can use for your Software Systems Design Project. Once you followed these instructions, remove the text and add a brief introduction to here.
+> A unified web platform designed for the Computer Vision & AI Lab, integrating a public research portfolio with a robust internal management system for streamlining equipment bookings and GPU resource scheduling.
 
-### Enable GitHub Pages
+---
 
-You can put the things to be shown in GitHub pages into the _docs/_ folder. Both html and md file formats are supported. You need to go to settings and enable GitHub pages and select _main_ branch and _docs_ folder from the dropdowns, as shown in the below image.
+## 📖 About the Project
 
-![image](https://user-images.githubusercontent.com/11540782/98789936-028d3600-2429-11eb-84be-aaba665fdc75.png)
+This project implements a comprehensive web platform for the **Computer Vision and AI Lab**, designed to streamline both public outreach and internal operations.
 
-### Special Configurations
+The system serves two distinct purposes:
+1.  **External Visibility:** A dynamic public portfolio showcasing the lab's latest research, publications, and team achievements to the academic community and industry collaborators.
+2.  **Internal Operations:** A secure management dashboard to digitize daily workflows, replacing manual logbooks with role-based automation for equipment tracking and resource allocation.
 
-These projects will be automatically added into [https://projects.ce.pdn.ac.lk](). If you like to show more details about your project on this site, you can fill the parameters in the file, _/docs/index.json_
+## ✨ Key Features
 
-```
-{
-  "title": "This is the title of the project",
-  "team": [
-    {
-      "name": "Team Member Name 1",
-      "email": "email@eng.pdn.ac.lk",
-      "eNumber": "E/yy/xxx"
-    },
-    {
-      "name": "Team Member Name 2",
-      "email": "email@eng.pdn.ac.lk",
-      "eNumber": "E/yy/xxx"
-    },
-    {
-      "name": "Team Member Name 3",
-      "email": "email@eng.pdn.ac.lk",
-      "eNumber": "E/yy/xxx"
-    }
-  ],
-  "supervisors": [
-    {
-      "name": "Dr. Supervisor 1",
-      "email": "email@eng.pdn.ac.lk"
-    },
-    {
-      "name": "Supervisor 2",
-      "email": "email@eng.pdn.ac.lk"
-    }
-  ],
-  "tags": ["Web", "Software Systems", "CO2060"]
-}
-```
+### 🌍 Public Portal (Informational)
+* **Research Showcase:** Dynamic gallery of ongoing and completed projects.
+* **Publications:** Auto-updated list of research papers and journals.
+* **News & Events:** Announcements regarding workshops and lab activities.
+* **Team Profiles:** Dedicated pages for staff and student researchers.
 
-Once you filled this _index.json_ file, please verify the syntax is correct. (You can use [this](https://jsonlint.com/) tool).
+### 🔒 Internal System (Operational)
+* **Resource Booking Engine:** Real-time availability checks and reservation system for high-value assets (Drones, Cameras, Sensors).
+* **GPU Scheduling:** Job slot management system for shared computing resources (e.g., NVIDIA A100/H100 clusters).
+* **User Management:** Role-based access control (RBAC) for Students, Staff, and Admins.
+* **Consultation Requests:** Appointment scheduling system for students to meet supervisors.
 
-### Page Theme
+---
 
-A custom theme integrated with this GitHub Page, which is based on [github.com/cepdnaclk/eYY-project-theme](https://github.com/cepdnaclk/eYY-project-theme). If you like to remove this default theme, you can remove the file, _docs/\_config.yml_ and use HTML based website.
+## 🛠️ Tech Stack
+
+This project utilizes a modern, decoupled architecture to ensure scalability and ease of integration with AI workflows.
+
+| Component | Technology | Description |
+| :--- | :--- | :--- |
+| **Frontend** | ![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB) | Interactive UI for calendars and dashboards. |
+| **Backend** | ![Django](https://img.shields.io/badge/Django-092E20?style=flat-square&logo=django&logoColor=white) | Robust API handling, Auth, and Admin interface. |
+| **Database** | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white) | Relational database for complex booking logic. |
+| **Styling** | ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white) | Rapid UI development. |
+| **API** | REST / DRF | Django REST Framework for client-server communication. |
+
+---
+
+## 🏗️ Architecture
+
+The system follows a modular design where the Backend (Django) serves as the API provider for the Frontend (React).
+
+
+
+*(Placeholder: Architecture diagram will be added here)*
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to set up the project locally.
+
+### Prerequisites
+* Python 3.8+
+* Node.js & npm
+* PostgreSQL
+
+### 1. Clone the Repository
+```bash
+git clone [https://github.com/abdul-rizvi/cv-lab-system.git](https://github.com/abdul-rizvi/cv-lab-system.git)
+cd cv-lab-system

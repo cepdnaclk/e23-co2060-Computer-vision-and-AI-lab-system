@@ -1,7 +1,6 @@
 # Computer Vision & AI Lab Management System
 
 ![Project Status](https://img.shields.io/badge/Status-In%20Development-orange?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
 ![Team](https://img.shields.io/badge/Team-Bug%20Slayer-red?style=flat-square)
 
 > A unified web platform designed for the Computer Vision & AI Lab, integrating a public research portfolio with a robust internal management system for streamlining equipment bookings and GPU resource scheduling.

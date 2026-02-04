@@ -2,9 +2,8 @@
 layout: home
 permalink: index.html
 
-# Please update this with your repository name and project title
 repository-name: eYY-co2060-project-template
-title: Project Template
+title: CO2060
 ---
 
 [comment]: # "This is the standard layout for the project, but you can clean this and use your own template, and add more information required for your own project"
@@ -20,13 +19,14 @@ If your followed all the given instructions correctly, your repository will be a
 A HTML template integrated with the given GitHub repository templates, based on github.com/cepdnaclk/eYY-project-theme . If you like to remove this default theme and make your own web page, you can remove the file, docs/_config.yml and create the site using HTML. -->
 
 # Project Title
-
+Computer vision & AI lab system
 ---
 
 ## Team
--  eNumber, Name, [email](mailto:name@email.com)
--  eNumber, Name, [email](mailto:name@email.com)
--  eNumber, Name, [email](mailto:name@email.com)
+-  E/23/282, M.R.A Rahman, e23282@eng.pdn.ac.lk(mailto:name@email.com)
+-  E/23/273, A Piraveen, e23273@eng.pdn.ac.lk(mailto:name@email.com)
+-  E/23/289, A Rajeeth, e23289@eng.pdn.ac.lk(mailto:name@email.com)
+-  E/23/396, M Tharsika, e23396@eng.pdn.ac.lk(mailto:name@email.com)
 
 <!-- Image (photo/drawing of the final hardware) should be here -->
 
@@ -44,8 +44,9 @@ A HTML template integrated with the given GitHub repository templates, based on 
 
 ## Introduction
 
-Description of the real world problem and solution, impact
+This project implements a comprehensive web platform for the Computer Vision and AI Lab, designed to streamline both public outreach and internal operations. The public interface acts as a dynamic portfolio, showcasing the lab's latest research, publications, and team achievements to the academic community.
 
+Internally, the system features a secure management dashboard to digitize daily workflows. Key modules include an inventory booking engine for high-value equipment (such as drones and cameras) and a scheduling system for shared GPU computing resources. By replacing manual logbooks with role-based automation, this platform ensures efficient resource utilization and seamless collaboration between students and administration.
 
 ## Solution Architecture
 

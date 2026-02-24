@@ -2,7 +2,7 @@
 layout: home
 permalink: index.html
 
-repository-name: eYY-co2060-project-template
+repository-name: e23-co2060-project-Computer-vision-and-AI-lab-system
 title: CO2060
 ---
 

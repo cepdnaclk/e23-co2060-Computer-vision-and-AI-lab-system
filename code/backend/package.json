@@ -1,0 +1,31 @@
+{
+  "name": "e23-co2060-computer-vision-and-ai-lab-system",
+  "version": "1.0.0",
+  "description": "a dual purpose website, which will serve as a public portal and a mangement system for lab",
+  "homepage": "https://github.com/cepdnaclk/e23-co2060-Computer-vision-and-AI-lab-system#readme",
+  "bugs": {
+    "url": "https://github.com/cepdnaclk/e23-co2060-Computer-vision-and-AI-lab-system/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cepdnaclk/e23-co2060-Computer-vision-and-AI-lab-system.git"
+  },
+  "license": "ISC",
+  "author": "gr 30",
+  "type": "commonjs",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.18.0"
+  }
+}

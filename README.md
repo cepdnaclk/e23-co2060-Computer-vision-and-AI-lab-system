@@ -60,7 +60,7 @@ The system follows a modular design where the Backend (Django) serves as the API
 Follow these steps to set up the project locally.
 
 ### Prerequisites
-* Python 3.8+
+
 * Node.js & npm
 * PostgreSQL
 

@@ -9,11 +9,16 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
+// Import routes
+const inventoryRoutes = require("./routes/inventoryRoutes");
 
-// Test database connection
+// Use routes
+app.use("/api/items", inventoryRoutes);
+
+// Test database connection before starting
 const startServer = async () => {
     try {
-        await pool.query("SELECT NOW()");
+        await pool.query("SELECT 1");
         console.log("Database connected successfully");
 
         app.listen(process.env.PORT, () => {

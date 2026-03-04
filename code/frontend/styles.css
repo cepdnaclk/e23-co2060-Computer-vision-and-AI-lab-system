@@ -1,0 +1,226 @@
+:root{
+  --navy:#0f2a57;
+  --white:#fff;
+  --text:#222;
+  --muted:#666;
+  --red:#b30000;
+  --gold:#d1a62a;
+  --shadow: 0 10px 30px rgba(0,0,0,.10);
+  --radius: 999px;
+}
+
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color:var(--text);
+  background:#f6f7fb;
+}
+
+.container{
+  width:min(1200px, 92%);
+  margin:0 auto;
+}
+
+/* Top bar */
+.topbar{
+  background:var(--navy);
+  height:56px;
+  display:flex;
+  align-items:center;
+}
+.topbar-inner{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+}
+.topbar-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:10px 18px;
+  background:#1c3b74;
+  color:#fff;
+  text-decoration:none;
+  border-radius:6px;
+  font-weight:600;
+}
+
+/* Header */
+.header{
+  background:var(--white);
+  position:sticky;
+  top:0;
+  z-index:50;
+  box-shadow: 0 2px 0 rgba(0,0,0,.03);
+}
+.header-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:14px 0;
+}
+
+/* Brand */
+.brand{ display:flex; align-items:center; gap:10px; text-decoration:none; }
+.brand-logo{
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #eee;
+}
+
+/* Nav */
+.nav{ flex: 1; }
+.nav-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:18px;
+}
+.nav-link{
+  color:var(--text);
+  text-decoration:none;
+  font-weight:600;
+  padding:10px 8px;
+  border-radius:10px;
+}
+.nav-link:hover{ color:var(--red); }
+
+.active-red{ color:var(--red); }
+
+/* Pill highlight (like EngEx2025) */
+.pill{
+  background:rgba(209,166,42,.35);
+  border-radius:var(--radius);
+  padding:10px 14px;
+  border:1px solid rgba(209,166,42,.6);
+}
+
+/* Dropdown */
+.dropdown{ position:relative; }
+.nav-btn{
+  background:transparent;
+  border:0;
+  cursor:pointer;
+  font:inherit;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.chev{ font-size:.9em; color:var(--muted); }
+
+.dropdown-menu{
+  position:absolute;
+  top:46px;
+  right:0;
+  min-width:220px;
+  background:#fff;
+  border:1px solid #eee;
+  border-radius:14px;
+  box-shadow: var(--shadow);
+  padding:10px;
+  display:none;
+}
+.dropdown-menu a{
+  display:block;
+  padding:10px 12px;
+  border-radius:10px;
+  color:var(--text);
+  text-decoration:none;
+  font-weight:600;
+}
+.dropdown-menu a:hover{
+  background:#f2f4f8;
+  color:var(--red);
+}
+
+/* Search */
+.icon-btn{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  border:1px solid #eee;
+  background:#fff;
+  cursor:pointer;
+}
+.icon-btn:hover{ background:#f6f7fb; }
+
+.search-row{
+  border-top:1px solid #f0f0f0;
+  display:none;
+}
+.search-inner{
+  padding:12px 0;
+  display:flex;
+  gap:12px;
+}
+.search-inner input{
+  flex:1;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  font-size:16px;
+}
+.btn{
+  padding:12px 16px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  background:#fff;
+  cursor:pointer;
+  font-weight:700;
+}
+
+/* Hero */
+.hero{
+  /* Replace hero.jpg with your image */
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.15), rgba(0,0,0,.35)),
+    url("hero.jpg");
+  background-size:cover;
+  background-position:center;
+  height: calc(100vh - 56px - 86px);
+  min-height:420px;
+  position:relative;
+}
+.hero-overlay{ display:none; } /* kept for extensibility */
+.hero-content{ height:100%; display:flex; align-items:flex-end; padding-bottom:30px; }
+
+/* Mobile */
+.hamburger{
+  display:none;
+  width:44px;
+  height:44px;
+  border-radius:12px;
+  border:1px solid #eee;
+  background:#fff;
+  cursor:pointer;
+  font-size:20px;
+}
+@media (max-width: 900px){
+  .nav{ display:none; }
+  .hamburger{ display:inline-flex; align-items:center; justify-content:center; }
+  .nav.open{ display:block; width:100%; }
+  .header-inner{ flex-wrap:wrap; }
+  .nav-list{
+    justify-content:flex-start;
+    flex-wrap:wrap;
+    gap:10px;
+    padding-bottom:10px;
+  }
+}
+
+/* Utility */
+.sr-only{
+  position:absolute;
+  width:1px;height:1px;
+  padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);
+  white-space:nowrap;border:0;
+}

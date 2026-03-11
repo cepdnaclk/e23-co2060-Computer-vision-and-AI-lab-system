@@ -1,113 +1,13 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>University Style Header</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <!-- Top bar -->
-  <div class="topbar">
-    <div class="container topbar-inner">
-      <div class="topbar-spacer"></div>
-      <a class="topbar-pill" href="#">LMS</a>
-    </div>
-  </div>
-
-  <!-- Main header -->
-  <header class="header">
-    <div class="container header-inner">
-      <!-- Logo -->
-      <a class="brand" href="#">
-        <img class="brand-logo" src="C:\Users\LENOVO LEGION\Documents\sem 3\2yp\code\e23-co2060-Computer-vision-and-AI-lab-system\docs\images\uop_logo.png" alt="Logo">
-      </a>
-
-      <!-- Nav -->
-      <nav class="nav" aria-label="Primary">
-        <ul class="nav-list" id="navList">
-          <li class="nav-item"><a class="nav-link active-red" href="#">Home</a></li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-          </li>
-
-          <li class="nav-item dropdown">
-            <button class="nav-link nav-btn" type="button" data-dropdown="academic">
-              Academic <span class="chev">▾</span>
-            </button>
-            <div class="dropdown-menu" id="academic">
-              <a href="#">Programs</a>
-              <a href="#">Admissions</a>
-              <a href="#">Scholarships</a>
-            </div>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link pill" href="#">EngEx2025</a>
-          </li>
-
-          <li class="nav-item dropdown">
-            <button class="nav-link nav-btn" type="button" data-dropdown="depts">
-              Departments and Units <span class="chev">▾</span>
-            </button>
-            <div class="dropdown-menu" id="depts">
-              <a href="#">Department A</a>
-              <a href="#">Department B</a>
-              <a href="#">Units</a>
-            </div>
-          </li>
-
-          <li class="nav-item dropdown">
-            <button class="nav-link nav-btn" type="button" data-dropdown="services">
-              Services <span class="chev">▾</span>
-            </button>
-            <div class="dropdown-menu" id="services">
-              <a href="#">Library</a>
-              <a href="#">IT Support</a>
-              <a href="#">Student Portal</a>
-            </div>
-          </li>
-
-          <li class="nav-item"><a class="nav-link" href="#">Alumni</a></li>
-
-          <!-- Search -->
-          <li class="nav-item">
-            <button class="icon-btn" id="openSearch" aria-label="Open search">
-              🔍
-            </button>
-          </li>
-        </ul>
-      </nav>
-
-      <!-- Mobile menu button -->
-      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
-        ☰
-      </button>
-    </div>
-
-    <!-- Search bar row (hidden by default) -->
-    <div class="search-row" id="searchRow" aria-hidden="true">
-      <div class="container search-inner">
-        <input id="searchInput" type="text" placeholder="Search..." />
-        <button class="btn" id="closeSearch" type="button">Close</button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Hero section -->
-  <main>
-    <section class="hero" aria-label="Hero">
-      <!-- Option A: background image in CSS (recommended) -->
-      <div class="hero-overlay"></div>
-
-      <div class="hero-content container">
-        <!-- Keep minimal to match screenshot (mostly image) -->
-        <h1 class="sr-only">Welcome</h1>
-      </div>
-    </section>
-  </main>
-
-  <script src="script.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>frontend</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>

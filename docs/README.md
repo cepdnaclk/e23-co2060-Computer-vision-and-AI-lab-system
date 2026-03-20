@@ -24,9 +24,9 @@ Computer vision & AI lab system
 
 ## Team
 -  E/23/282, M.R.A Rahman, e23282@eng.pdn.ac.lk(mailto:name@email.com)
--  E/23/273, A Piraveen, e23273@eng.pdn.ac.lk(mailto:name@email.com)
--  E/23/289, A Rajeeth, e23289@eng.pdn.ac.lk(mailto:name@email.com)
--  E/23/396, M Tharsika, e23396@eng.pdn.ac.lk(mailto:name@email.com)
+-  E/23/273, A.Piraveen, e23273@eng.pdn.ac.lk(mailto:name@email.com)
+-  E/23/289, A.Rajeeth, e23289@eng.pdn.ac.lk(mailto:name@email.com)
+-  E/23/396, M.Tharsika, e23396@eng.pdn.ac.lk(mailto:name@email.com)
 
 <!-- Image (photo/drawing of the final hardware) should be here -->
 

@@ -89,7 +89,51 @@ export function BookingModal({ onClose }) {
 
 // ── Login Modal ───────────────────────────────────────
 export function LoginModal({ onLogin, onClose }) {
-  const [role, setRole] = useState("student");
+  // UI toggle state
+  const [displayRole, setDisplayRole] = useState("student");
+  
+  // 2. Add state to capture user input and handle errors
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 3. The actual function that talks to your backend
+  const handleSignIn = async () => {
+    // Basic validation before sending
+    if (!email || !password) {
+      setError("Please enter both email and password.");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError(""); // Clear any old errors
+
+      // Send the request to your Express authController
+      const response = await loginUser({ email, password });
+
+      // If successful, save the JWT token to localStorage so the app remembers them
+      localStorage.setItem("token", response.data.token);
+      
+      // Save the user data locally just in case you need to display their name later
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+
+      // Tell App.jsx that the user is logged in, using the REAL role from PostgreSQL
+      onLogin(response.data.user.role); 
+
+    } catch (err) {
+      console.error("Login failed:", err);
+      // Display the error message sent from your backend (e.g., "Invalid credentials")
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Cannot connect to server. Please ensure the backend is running.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
@@ -104,15 +148,15 @@ export function LoginModal({ onLogin, onClose }) {
         </div>
 
         <div style={{ padding: "1.75rem" }}>
-          {/* Role selector */}
+          {/* Role selector (Now mostly just for UI feel, as DB dictates actual permissions) */}
           <div style={{ marginBottom: "1.25rem" }}>
             <label className="inp-label">Login As</label>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".5rem", marginTop: ".35rem" }}>
               {[["student","Student"],["staff","Staff"],["admin","Lab Admin"]].map(([v, l]) => (
                 <button
                   key={v}
-                  onClick={() => setRole(v)}
-                  style={{ padding: ".5rem", border: `1.5px solid ${role === v ? T.navy : T.border}`, background: role === v ? T.navy : "transparent", color: role === v ? T.white : T.textMid, borderRadius: 3, fontWeight: 600, fontSize: ".81rem" }}
+                  onClick={() => setDisplayRole(v)}
+                  style={{ padding: ".5rem", border: `1.5px solid ${displayRole === v ? T.navy : T.border}`, background: displayRole === v ? T.navy : "transparent", color: displayRole === v ? T.white : T.textMid, borderRadius: 3, fontWeight: 600, fontSize: ".81rem" }}
                 >
                   {l}
                 </button>
@@ -120,12 +164,38 @@ export function LoginModal({ onLogin, onClose }) {
             </div>
           </div>
 
-          <Field label="University Email" type="email"    placeholder="id@pdn.ac.lk" value="" onChange={() => {}} />
-          <Field label="Password"         type="password" placeholder="••••••••"      value="" onChange={() => {}} />
+          {/* Display error messages if login fails */}
+          {error && (
+            <div style={{ padding: "10px", marginBottom: "15px", background: "#fee2e2", color: "#991b1b", border: "1px solid #f87171", borderRadius: "3px", fontSize: "0.85rem", textAlign: "center" }}>
+              {error}
+            </div>
+          )}
 
-          <button onClick={() => onLogin(role)} className="btn-navy" style={{ width: "100%", padding: ".7rem", fontSize: ".9rem" }}>
-            Sign In to Portal
+          {/* 4. Bind the inputs to our React state */}
+          <Field 
+            label="University Email" 
+            type="email"    
+            placeholder="id@pdn.ac.lk" 
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+          />
+          <Field 
+            label="Password"         
+            type="password" 
+            placeholder="••••••••"      
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
+          />
+
+          <button 
+            onClick={handleSignIn} 
+            disabled={isLoading}
+            className="btn-navy" 
+            style={{ width: "100%", padding: ".7rem", fontSize: ".9rem", opacity: isLoading ? 0.7 : 1 }}
+          >
+            {isLoading ? "Verifying..." : "Sign In to Portal"}
           </button>
+          
           <button onClick={onClose} style={{ width: "100%", padding: ".55rem", background: "none", border: "none", color: T.textLight, fontSize: ".79rem", marginTop: ".5rem", cursor: "pointer" }}>
             Cancel
           </button>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { T } from "../styles/theme";
 import { Field } from "./UI";
 import { EQUIPMENT } from "../data/labData";
+import { loginUser } from "../services/api";
 
 // ── Booking Modal ─────────────────────────────────────
 export function BookingModal({ onClose }) {

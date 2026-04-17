@@ -1,6 +1,8 @@
+import { useState, useEffect } from "react";
 import { T } from "../styles/theme";
 import { Badge, PStat, PTable, PanelTitle } from "../components/UI";
 import { EQUIPMENT, PEOPLE, NEWS_ITEMS, ALL_RESERVATIONS } from "../data/labData";
+import { getItems, createItem } from "../services/api";
 
 // ── Dashboard ─────────────────────────────────────────
 function Dashboard() {
@@ -136,18 +138,68 @@ function FeePayments() {
 
 // ── Equipment Management ──────────────────────────────
 function EquipmentManagement() {
+  const [inventory, setInventory] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // We pull this out into its own function so we can call it when the page loads, 
+  // AND after we add a new item to refresh the list!
+  const fetchInventory = async () => {
+    try {
+      const response = await getItems();
+      setInventory(response.data);
+    } catch (error) {
+      console.error("Failed to fetch equipment:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchInventory();
+  }, []);
+
+  // 1. ADD THIS NEW FUNCTION TO TEST DATABASE WRITES
+  const handleAddTestItem = async () => {
+    try {
+      // This is the mock data we will send to PostgreSQL
+      const testItem = {
+        name: `Test Drone ${Math.floor(Math.random() * 1000)}`, // Adds a random number so you can click it multiple times
+        category: "Drone",
+        description: "Added via the React Frontend!"
+      };
+      
+      // Send to the backend
+      await createItem(testItem);
+      
+      // If successful, immediately fetch the updated list from the database
+      await fetchInventory(); 
+      
+    } catch (error) {
+      console.error("Error adding item:", error);
+      alert("Failed to add item. Check the console!");
+    }
+  };
+
+  if (isLoading) {
+    return <div className="fade-up" style={{ padding: "2rem", color: T.textMid }}>Loading live equipment data...</div>;
+  }
+
   return (
     <div className="fade-up">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
         <h2 style={{ fontFamily: "'Noto Serif',serif", fontSize: "1.3rem", fontWeight: 700, color: T.navyDark }}>Equipment Management</h2>
-        <button className="btn-navy">+ Add Equipment</button>
+        
+
       </div>
+      
       <PTable
-        cols={["Equipment","Specification","Category","Fee","Status"]}
-        rows={EQUIPMENT.map(e => [
-          `${e.icon} ${e.name}`, e.spec, e.cat, e.fee,
-          <span style={{ padding:"2px 7px", background: e.avail ? `${T.green}15` : `${T.red}12`, color: e.avail ? T.green : T.red, border:`1px solid ${e.avail ? T.green+"35" : T.red+"25"}`, fontSize:".68rem", fontWeight:700, borderRadius:2 }}>
-            {e.avail ? "Available" : "In Use"}
+        cols={["Equipment Name", "Category", "Description", "Status"]}
+        rows={inventory.map(item => [
+          <strong key={`name-${item.id}`}>{item.name}</strong>, 
+          item.category, 
+          item.description,
+          <span key={`status-${item.id}`} style={{ padding:"2px 7px", background: `${T.green}15`, color: T.green, border:`1px solid ${T.green}35`, fontSize:".68rem", fontWeight:700, borderRadius:2 }}>
+            Available
           </span>
         ])}
         onManage={() => {}}

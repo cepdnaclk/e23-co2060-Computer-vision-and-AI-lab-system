@@ -120,8 +120,12 @@ export function LoginModal({ onLogin, onClose }) {
       // Save the user data locally just in case you need to display their name later
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
-      // Tell App.jsx that the user is logged in, using the REAL role from PostgreSQL
-      onLogin(response.data.user.role); 
+      // Translate backend "officer" to frontend "admin" so the UI menus don't break
+      const backendRole = response.data.user.role;
+      const frontendRole = backendRole === "officer" ? "admin" : backendRole;
+      
+      // Tell App.jsx that the user is logged in
+      onLogin(frontendRole); 
 
     } catch (err) {
       console.error("Login failed:", err);

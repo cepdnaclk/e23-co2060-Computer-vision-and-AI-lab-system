@@ -21,4 +21,8 @@ export const getItems = () => API.get("/api/items");
 export const createItem = (data) => API.post("/api/items", data);
 export const deleteItem = (id) => API.delete(`/api/items/${id}`);
 
+// booking APIs
+export const createBooking = (data) => API.post("/api/bookings", data);
+export const getBookings = () => API.get("/api/bookings");
+
 export default API;

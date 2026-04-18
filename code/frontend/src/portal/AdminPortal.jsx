@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { T } from "../styles/theme";
 import { Badge, PStat, PTable, PanelTitle } from "../components/UI";
 import { EQUIPMENT, PEOPLE, NEWS_ITEMS, ALL_RESERVATIONS } from "../data/labData";
-import { getItems, createItem } from "../services/api";
+import { getItems, createItem, getBookings, updateBookingStatus } from "../services/api";
 
 // ── Dashboard ─────────────────────────────────────────
 function Dashboard() {
@@ -64,12 +64,73 @@ function UserManagement() {
 
 // ── Reservation Approval ──────────────────────────────
 function ReservationApproval() {
+  const [reservations, setReservations] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch all bookings from PostgreSQL
+  const fetchReservations = async () => {
+    try {
+      const response = await getBookings();
+      setReservations(response.data);
+    } catch (error) {
+      console.error("Failed to load reservations", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReservations();
+  }, []);
+
+  // Handle clicking Approve or Reject
+  const handleAction = async (id, newStatus) => {
+    try {
+      await updateBookingStatus(id, { status: newStatus });
+      fetchReservations(); // Refresh the table instantly
+    } catch (error) {
+      console.error("Failed to update status", error);
+      alert("Error updating booking. Check console.");
+    }
+  };
+
+  if (isLoading) {
+    return <div className="fade-up" style={{ padding: "2rem", color: T.textMid }}>Loading live reservations...</div>;
+  }
+
   return (
     <div className="fade-up">
       <h2 style={{ fontFamily: "'Noto Serif',serif", fontSize: "1.3rem", fontWeight: 700, color: T.navyDark, marginBottom: "1.25rem" }}>Reservation Approval</h2>
+      
       <PTable
-        cols={["ID","User","Role","Resource","Date","Time","Fee","Status"]}
-        rows={ALL_RESERVATIONS.map(r => [r.id, r.user, r.role, r.resource, r.date, r.time, r.fee, <Badge label={r.status} />])}
+        cols={["ID", "User", "Resource", "Date", "Time", "Status", "Actions"]}
+        rows={reservations.map(r => {
+          // Setup badge colors
+          let badgeColor = T.amber;
+          if (r.status === "Approved") badgeColor = T.green;
+          if (r.status === "Rejected") badgeColor = T.red;
+
+          return [
+            `R-${r.id}`, 
+            r.user_name || "Student", 
+            r.resource, 
+            new Date(r.booking_date).toLocaleDateString(), 
+            r.time_slot, 
+            <Badge key={`badge-${r.id}`} label={r.status} color={badgeColor} />,
+            
+            // The Action Buttons
+            <div key={`action-${r.id}`} style={{ display: "flex", gap: "0.5rem" }}>
+              {r.status === "Pending" ? (
+                <>
+                  <button onClick={() => handleAction(r.id, "Approved")} style={{ padding: "4px 8px", background: T.green, color: "white", border: "none", borderRadius: "3px", fontSize: "0.75rem", cursor: "pointer", fontWeight: "bold" }}>✓ Approve</button>
+                  <button onClick={() => handleAction(r.id, "Rejected")} style={{ padding: "4px 8px", background: T.red, color: "white", border: "none", borderRadius: "3px", fontSize: "0.75rem", cursor: "pointer", fontWeight: "bold" }}>✕ Reject</button>
+                </>
+              ) : (
+                <span style={{ fontSize: "0.75rem", color: T.textLight }}>Processed</span>
+              )}
+            </div>
+          ];
+        })}
         onManage={() => {}}
       />
     </div>

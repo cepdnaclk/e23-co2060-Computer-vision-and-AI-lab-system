@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 // Styles
 import { GLOBAL_CSS } from "./styles/theme";
@@ -68,6 +68,20 @@ export default function App() {
   const [userRole,    setUserRole]    = useState(null);   // null = public website
   const [portalTab,   setPortalTab]   = useState("dashboard");
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        // Translate "officer" back to "admin" for the frontend menus
+        const role = parsedUser.role === "officer" ? "admin" : parsedUser.role;
+        setUserRole(role);
+      } catch (error) {
+        console.error("Failed to restore session", error);
+      }
+    }
+  }, []);
+
   const handleLogin  = useCallback(role => {
     setUserRole(role);
     setPortalTab("dashboard");
@@ -75,7 +89,9 @@ export default function App() {
   }, []);
 
   const handleLogout = useCallback(() => {
-    setUserRole(null);
+    localStorage.removeItem("token"); // Destroy the token
+    localStorage.removeItem("user");  // Destroy the user data
+    setUserRole(null);                // Reset React state
     setSection("home");
   }, []);
 

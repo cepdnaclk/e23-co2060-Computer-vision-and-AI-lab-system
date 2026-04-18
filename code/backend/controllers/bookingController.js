@@ -46,4 +46,26 @@ const getBookings = async (req, res) => {
     }
 };
 
-module.exports = { createBooking, getBookings };
+// 3. Update booking status (For Admins)
+const updateBookingStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body; // "Approved" or "Rejected"
+
+        const result = await pool.query(
+            "UPDATE reservations SET status = $1 WHERE id = $2 RETURNING *",
+            [status, id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Booking not found" });
+        }
+
+        res.json({ message: "Booking updated", booking: result.rows[0] });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error updating booking" });
+    }
+};
+
+module.exports = { createBooking, getBookings, updateBookingStatus };

@@ -2,16 +2,41 @@ import { useState } from "react";
 import { T } from "../styles/theme";
 import { Field } from "./UI";
 import { EQUIPMENT } from "../data/labData";
-import { loginUser } from "../services/api";
+
+// Import your API functions
+import { loginUser, createBooking } from "../services/api"; 
 
 // ── Booking Modal ─────────────────────────────────────
 export function BookingModal({ onClose }) {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({ type: "", resource: "", date: "", time: "", purpose: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false); // Loading state for submission
+
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
 
   const canProceed1 = form.type && form.resource;
   const canProceed2 = form.date && form.time;
+
+  // The function that sends the booking to your Express backend
+  const handleSubmitBooking = async () => {
+    try {
+      setIsSubmitting(true);
+      await createBooking({
+        requestType: form.type,
+        resource: form.resource,
+        date: form.date,
+        time: form.time,
+        purpose: form.purpose
+      });
+      alert("Success! Your booking request has been sent for admin approval.");
+      onClose(); // Close the modal on success
+    } catch (error) {
+      console.error("Booking error:", error);
+      alert("Failed to submit the booking request. Please check the console.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
@@ -75,9 +100,15 @@ export function BookingModal({ onClose }) {
                 ℹ Booking subject to staff/admin approval. Fees calculated upon approval.
               </div>
               <div style={{ display: "flex", gap: ".75rem" }}>
-                <button onClick={() => setStep(2)} className="btn-outline" style={{ flex: 1 }}>← Back</button>
-                <button onClick={onClose} style={{ flex: 2, background: T.green, color: T.white, border: "none", padding: ".65rem", fontWeight: 700, fontSize: ".85rem", borderRadius: 3, cursor: "pointer" }}>
-                  ✓ Submit Request
+                <button onClick={() => setStep(2)} className="btn-outline" style={{ flex: 1 }} disabled={isSubmitting}>← Back</button>
+                
+                {/* Updated Submit Button */}
+                <button 
+                  onClick={handleSubmitBooking} 
+                  disabled={isSubmitting}
+                  style={{ flex: 2, background: T.green, color: T.white, border: "none", padding: ".65rem", fontWeight: 700, fontSize: ".85rem", borderRadius: 3, cursor: isSubmitting ? "not-allowed" : "pointer", opacity: isSubmitting ? 0.7 : 1 }}
+                >
+                  {isSubmitting ? "Submitting..." : "✓ Submit Request"}
                 </button>
               </div>
             </>
@@ -90,18 +121,14 @@ export function BookingModal({ onClose }) {
 
 // ── Login Modal ───────────────────────────────────────
 export function LoginModal({ onLogin, onClose }) {
-  // UI toggle state
   const [displayRole, setDisplayRole] = useState("student");
   
-  // 2. Add state to capture user input and handle errors
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // 3. The actual function that talks to your backend
   const handleSignIn = async () => {
-    // Basic validation before sending
     if (!email || !password) {
       setError("Please enter both email and password.");
       return;
@@ -109,27 +136,22 @@ export function LoginModal({ onLogin, onClose }) {
 
     try {
       setIsLoading(true);
-      setError(""); // Clear any old errors
+      setError(""); 
 
-      // Send the request to your Express authController
       const response = await loginUser({ email, password });
 
-      // If successful, save the JWT token to localStorage so the app remembers them
+      // Save token and user to local storage
       localStorage.setItem("token", response.data.token);
-      
-      // Save the user data locally just in case you need to display their name later
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
       // Translate backend "officer" to frontend "admin" so the UI menus don't break
       const backendRole = response.data.user.role;
       const frontendRole = backendRole === "officer" ? "admin" : backendRole;
       
-      // Tell App.jsx that the user is logged in
       onLogin(frontendRole); 
 
     } catch (err) {
       console.error("Login failed:", err);
-      // Display the error message sent from your backend (e.g., "Invalid credentials")
       if (err.response?.data?.message) {
         setError(err.response.data.message);
       } else {
@@ -153,7 +175,7 @@ export function LoginModal({ onLogin, onClose }) {
         </div>
 
         <div style={{ padding: "1.75rem" }}>
-          {/* Role selector (Now mostly just for UI feel, as DB dictates actual permissions) */}
+          {/* Role selector */}
           <div style={{ marginBottom: "1.25rem" }}>
             <label className="inp-label">Login As</label>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".5rem", marginTop: ".35rem" }}>
@@ -169,35 +191,16 @@ export function LoginModal({ onLogin, onClose }) {
             </div>
           </div>
 
-          {/* Display error messages if login fails */}
           {error && (
             <div style={{ padding: "10px", marginBottom: "15px", background: "#fee2e2", color: "#991b1b", border: "1px solid #f87171", borderRadius: "3px", fontSize: "0.85rem", textAlign: "center" }}>
               {error}
             </div>
           )}
 
-          {/* 4. Bind the inputs to our React state */}
-          <Field 
-            label="University Email" 
-            type="email"    
-            placeholder="id@pdn.ac.lk" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-          />
-          <Field 
-            label="Password"         
-            type="password" 
-            placeholder="••••••••"      
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-          />
+          <Field label="University Email" type="email"    placeholder="id@pdn.ac.lk" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Field label="Password"         type="password" placeholder="••••••••"      value={password} onChange={(e) => setPassword(e.target.value)} />
 
-          <button 
-            onClick={handleSignIn} 
-            disabled={isLoading}
-            className="btn-navy" 
-            style={{ width: "100%", padding: ".7rem", fontSize: ".9rem", opacity: isLoading ? 0.7 : 1 }}
-          >
+          <button onClick={handleSignIn} disabled={isLoading} className="btn-navy" style={{ width: "100%", padding: ".7rem", fontSize: ".9rem", opacity: isLoading ? 0.7 : 1 }}>
             {isLoading ? "Verifying..." : "Sign In to Portal"}
           </button>
           

@@ -14,10 +14,12 @@ app.use(express.json());
 // Import routes
 const inventoryRoutes = require("./routes/inventoryRoutes");
 const authRoutes = require("./routes/authRoutes");
+const bookingRoutes = require("./routes/bookingRoutes");
 
 // Use routes
 app.use("/api/items", inventoryRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/bookings", bookingRoutes);
 
 // Test database connection before starting
 const startServer = async () => {

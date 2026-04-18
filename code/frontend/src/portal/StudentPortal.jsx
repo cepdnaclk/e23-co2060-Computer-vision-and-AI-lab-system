@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { T } from "../styles/theme";
 import { Badge, Field, PStat, PTable, PanelTitle, QuickBtn } from "../components/UI";
 import { PROJECTS, EQUIPMENT, ALL_RESERVATIONS } from "../data/labData";
+import { createBooking } from "../services/api";
 
 const MY_RESERVATIONS = [
   { id:"R-001", resource:"GPU Cluster (A100)", date:"2025-03-12", time:"10:00–12:00", status:"Approved", fee:"LKR 1,000" },
@@ -47,7 +49,7 @@ function Dashboard({ setShowBooking }) {
 }
 
 // ── Booking Form ──────────────────────────────────────
-function BookingForm({ active, setShowBooking }) {
+function BookingForm({ active }) {
   const TITLES = {
     equipment:"Equipment Booking", reservation:"Lab Space Reservation",
     gpu:"GPU Processing Request",  consultation:"Consultation Request",
@@ -56,16 +58,65 @@ function BookingForm({ active, setShowBooking }) {
     gpu:          ["Training Run (A100)","Inference Batch","Fine-tuning Job"],
     consultation: ["CV Methodology","Dataset Advice","Model Selection","Publication Review"],
   };
+
+  // 1. Add state to track user input
+  const [form, setForm] = useState({ resource: "", date: "", time: "", purpose: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Helper to update state as they type
+  const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  // 2. The function that talks to your backend
+  const handleSubmit = async () => {
+    if (!form.resource || !form.date || !form.time) {
+      alert("Please select a resource, date, and time slot.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await createBooking({
+        requestType: TITLES[active], // Uses the title (e.g., "Equipment Booking") as the type
+        resource: form.resource,
+        date: form.date,
+        time: form.time,
+        purpose: form.purpose
+      });
+      
+      alert("Success! Your booking request has been submitted for admin approval.");
+      
+      // Clear the form fields after a successful submission
+      setForm({ resource: "", date: "", time: "", purpose: "" });
+      
+    } catch (error) {
+      console.error("Booking error:", error);
+      alert("Failed to submit the booking request.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="fade-up">
       <h2 style={{ fontFamily: "'Noto Serif',serif", fontSize: "1.3rem", fontWeight: 700, color: T.navyDark, marginBottom: ".35rem" }}>{TITLES[active]}</h2>
       <p style={{ color: T.textLight, fontSize: ".83rem", marginBottom: "1.5rem" }}>Submit your request. All bookings are subject to staff/admin approval.</p>
       <div style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 3, padding: "1.75rem", maxWidth: 520 }}>
-        <Field label="Resource / Type" value="" onChange={() => {}} options={OPTS[active] || EQUIPMENT.map(e => e.name)} />
-        <Field label="Preferred Date"  type="date" value="" onChange={() => {}} />
-        <Field label="Time Slot"       value="" onChange={() => {}} options={["08:00–10:00","10:00–12:00","13:00–15:00","15:00–17:00","17:00–19:00"]} />
-        <Field label="Purpose / Notes" rows={3}   value="" onChange={() => {}} placeholder="Describe your intended use..." />
-        <button onClick={() => setShowBooking(true)} className="btn-navy" style={{ width: "100%", padding: ".7rem" }}>Submit Request</button>
+        
+        {/* 3. Bind the fields to our state */}
+        <Field label="Resource / Type" value={form.resource} onChange={set("resource")} options={OPTS[active] || EQUIPMENT.map(e => e.name)} />
+        <Field label="Preferred Date"  type="date" value={form.date} onChange={set("date")} />
+        <Field label="Time Slot"       value={form.time} onChange={set("time")} options={["08:00–10:00","10:00–12:00","13:00–15:00","15:00–17:00","17:00–19:00"]} />
+        <Field label="Purpose / Notes" rows={3}   value={form.purpose} onChange={set("purpose")} placeholder="Describe your intended use..." />
+        
+        {/* 4. Trigger our new submit function */}
+        <button 
+          onClick={handleSubmit} 
+          disabled={isSubmitting}
+          className="btn-navy" 
+          style={{ width: "100%", padding: ".7rem", opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? "not-allowed" : "pointer" }}
+        >
+          {isSubmitting ? "Submitting..." : "Submit Request"}
+        </button>
       </div>
     </div>
   );

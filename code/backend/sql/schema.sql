@@ -22,3 +22,16 @@ CREATE TABLE bookings (
     end_date DATE,
     status VARCHAR(20) DEFAULT 'pending'
 );
+
+CREATE TABLE reservations (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    request_type VARCHAR(100),
+    resource VARCHAR(100),
+    booking_date DATE,
+    time_slot VARCHAR(50),
+    purpose TEXT,
+    status VARCHAR(50) DEFAULT 'Pending',
+    fee VARCHAR(50) DEFAULT 'TBD',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

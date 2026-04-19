@@ -1,156 +1,107 @@
-import { useState, useCallback, useEffect } from "react";
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import ErrorBoundary from './components/ErrorBoundary';
 
-// Styles
-import { GLOBAL_CSS } from "./styles/theme";
+import LoginPage        from './pages/LoginPage';
+import RegisterPage     from './pages/RegisterPage';
+import StudentDashboard from './pages/StudentDashboard';
+import EquipmentCatalog from './pages/EquipmentCatalog';
+import EquipmentDetail  from './pages/EquipmentDetail';
+import BookingForm      from './pages/BookingForm';
+import MyBookings       from './pages/MyBookings';
+import BookingDetail    from './pages/BookingDetail';
+import ProfilePage      from './pages/ProfilePage';
+import ProfessorDashboard from './pages/ProfessorDashboard';
+import OfficerDashboard from './pages/OfficerDashboard';
+import AdminDashboard   from './pages/AdminDashboard';
+import NotFoundPage     from './pages/NotFoundPage';
+import StudentLayout    from './components/StudentLayout';
 
-// Layout
-import { TopBar, LogoBar, MainNav, Breadcrumb, Footer } from "./components/Layout";
+// Redirect to the correct home for each role
+const SmartRedirect = () => {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="loading-screen"><div className="spinner" /></div>;
+  if (!user)   return <Navigate to="/login" replace />;
+  if (user.role === 'admin')     return <Navigate to="/admin"     replace />;
+  if (user.role === 'officer')   return <Navigate to="/officer"   replace />;
+  if (user.role === 'professor') return <Navigate to="/professor" replace />;
+  return <Navigate to="/dashboard" replace />;
+};
 
-// Modals
-import { BookingModal, LoginModal } from "./components/Modals";
+// Role-guarded route wrapper
+const ProtectedRoute = ({ children, roles }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="loading-screen"><div className="spinner" /></div>;
+  if (!user)   return <Navigate to="/login" replace />;
+  if (roles && !roles.includes(user.role)) return <Navigate to="/" replace />;
+  return children;
+};
 
-// Public pages
-import { HomePage }        from "./pages/HomePage";
-import { AboutPage }       from "./pages/AboutPage";
-import { ResearchPage }    from "./pages/ResearchPage";
-import { ProjectsPage }    from "./pages/ProjectsPage";
-import { PublicationsPage} from "./pages/PublicationsPage";
-import { PeoplePage }      from "./pages/PeoplePage";
-import { FacilitiesPage }  from "./pages/FacilitiesPage";
-import { NewsPage }        from "./pages/NewsPage";
-import { ServicesPage }    from "./pages/ServicesPage";
-import { ContactPage }     from "./pages/ContactPage";
-
-// Portal
-import { PortalSidebar, PortalHeader } from "./portal/PortalLayout";
-import { StudentPortal } from "./portal/StudentPortal";
-import { StaffPortal }   from "./portal/StaffPortal";
-import { AdminPortal }   from "./portal/AdminPortal";
-
-// ─────────────────────────────────────────────────────
-// PUBLIC PAGE ROUTER
-// ─────────────────────────────────────────────────────
-function PublicPage({ section, setSection, setShowBooking, setShowLogin }) {
-  const shared = { setSection, setShowBooking, setShowLogin };
-
-  switch (section) {
-    case "home":         return <HomePage        {...shared} />;
-    case "about":        return <AboutPage />;
-    case "research":     return <ResearchPage />;
-    case "projects":     return <ProjectsPage />;
-    case "publications": return <PublicationsPage />;
-    case "people":       return <PeoplePage />;
-    case "facilities":   return <FacilitiesPage  setShowBooking={setShowBooking} />;
-    case "news":         return <NewsPage />;
-    case "services":     return <ServicesPage    setShowBooking={setShowBooking} />;
-    case "contact":      return <ContactPage />;
-    default:             return <HomePage {...shared} />;
-  }
-}
-
-// ─────────────────────────────────────────────────────
-// PORTAL CONTENT ROUTER
-// ─────────────────────────────────────────────────────
-function PortalContent({ role, active, setShowBooking }) {
-  if (role === "student") return <StudentPortal active={active} setShowBooking={setShowBooking} />;
-  if (role === "staff")   return <StaffPortal   active={active} />;
-  if (role === "admin")   return <AdminPortal   active={active} />;
-  return null;
-}
-
-// ─────────────────────────────────────────────────────
-// ROOT APP
-// ─────────────────────────────────────────────────────
-export default function App() {
-  const [section,     setSection]     = useState("home");
-  const [showBooking, setShowBooking] = useState(false);
-  const [showLogin,   setShowLogin]   = useState(false);
-  const [userRole,    setUserRole]    = useState(null);   // null = public website
-  const [portalTab,   setPortalTab]   = useState("dashboard");
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        // Translate "officer" back to "admin" for the frontend menus
-        const role = parsedUser.role === "officer" ? "admin" : parsedUser.role;
-        setUserRole(role);
-      } catch (error) {
-        console.error("Failed to restore session", error);
-      }
-    }
-  }, []);
-
-  const handleLogin  = useCallback(role => {
-    setUserRole(role);
-    setPortalTab("dashboard");
-    setShowLogin(false);
-  }, []);
-
-  const handleLogout = useCallback(() => {
-    localStorage.removeItem("token"); // Destroy the token
-    localStorage.removeItem("user");  // Destroy the user data
-    setUserRole(null);                // Reset React state
-    setSection("home");
-  }, []);
-
-  // ── PORTAL VIEW ──────────────────────────────────────
-  if (userRole) {
-    return (
-      <div style={{ display: "flex", minHeight: "100vh", background: "#f4f6f9" }}>
-        <style>{GLOBAL_CSS}</style>
-
-        <PortalSidebar
-          role={userRole}
-          active={portalTab}
-          setActive={setPortalTab}
-          onLogout={handleLogout}
-        />
-
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: "100vh", overflow: "hidden" }}>
-          <PortalHeader role={userRole} />
-          <main style={{ flex: 1, padding: "2rem", overflowY: "auto" }}>
-            <PortalContent
-              role={userRole}
-              active={portalTab}
-              setShowBooking={setShowBooking}
-            />
-          </main>
-        </div>
-
-        {showBooking && <BookingModal onClose={() => setShowBooking(false)} />}
-      </div>
-    );
-  }
-
-  // ── PUBLIC WEBSITE VIEW ──────────────────────────────
+function App() {
   return (
-    <div style={{ minHeight: "100vh", background: "#f4f6f9" }}>
-      <style>{GLOBAL_CSS}</style>
+    <ErrorBoundary>
+      <AuthProvider>
+        <BrowserRouter>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: { fontFamily: 'Sora, sans-serif', fontSize: '13px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' },
+              success: { iconTheme: { primary: '#0a7a45', secondary: '#fff' } },
+              error:   { iconTheme: { primary: '#c0392b', secondary: '#fff' } },
+            }}
+          />
+          <Routes>
+            {/* Public */}
+            <Route path="/"         element={<SmartRedirect />} />
+            <Route path="/login"    element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
-      <TopBar  onLogin={() => setShowLogin(true)} />
-      <LogoBar />
-      <MainNav
-        section={section}
-        setSection={setSection}
-        onBook={() => setShowBooking(true)}
-      />
-      <Breadcrumb section={section} />
+            {/* Student / External portal (sidebar layout) */}
+            <Route path="/" element={
+              <ProtectedRoute roles={['student', 'external']}>
+                <StudentLayout />
+              </ProtectedRoute>
+            }>
+              <Route path="dashboard"        element={<StudentDashboard />} />
+              <Route path="catalog"          element={<EquipmentCatalog />} />
+              <Route path="equipment/:id"    element={<EquipmentDetail />} />
+              <Route path="book/:equipmentId" element={<BookingForm />} />
+              <Route path="my-bookings"      element={<MyBookings />} />
+              <Route path="bookings/:id"     element={<BookingDetail />} />
+              <Route path="profile"          element={<ProfilePage />} />
+            </Route>
 
-      <main style={{ minHeight: "calc(100vh - 220px)" }}>
-        <PublicPage
-          section={section}
-          setSection={setSection}
-          setShowBooking={setShowBooking}
-          setShowLogin={setShowLogin}
-        />
-      </main>
+            {/* Professor approval dashboard */}
+            <Route path="/professor" element={
+              <ProtectedRoute roles={['professor', 'admin']}>
+                <ProfessorDashboard />
+              </ProtectedRoute>
+            } />
 
-      <Footer />
+            {/* Officer dashboard */}
+            <Route path="/officer" element={
+              <ProtectedRoute roles={['officer', 'admin']}>
+                <OfficerDashboard />
+              </ProtectedRoute>
+            } />
 
-      {showBooking && <BookingModal onClose={() => setShowBooking(false)} />}
-      {showLogin   && <LoginModal  onLogin={handleLogin} onClose={() => setShowLogin(false)} />}
-    </div>
+            {/* Admin overview */}
+            <Route path="/admin" element={
+              <ProtectedRoute roles={['admin']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } />
+
+            {/* 404 */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
+
+export default App;

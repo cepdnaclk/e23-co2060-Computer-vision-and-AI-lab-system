@@ -4,7 +4,7 @@ import { Field } from "./UI";
 import { EQUIPMENT } from "../data/labData";
 
 // Import your API functions
-import { loginUser, createBooking } from "../services/api"; 
+import { loginUser, registerUser, createBooking } from "../services/api"; 
 
 // ── Booking Modal ─────────────────────────────────────
 export function BookingModal({ onClose }) {
@@ -120,7 +120,7 @@ export function BookingModal({ onClose }) {
 }
 
 // ── Login Modal ───────────────────────────────────────
-export function LoginModal({ onLogin, onClose }) {
+export function LoginModal({ onLogin, onClose, onSwitchToRegister }) {
   const [displayRole, setDisplayRole] = useState("student");
   
   const [email, setEmail] = useState("");
@@ -208,7 +208,118 @@ export function LoginModal({ onLogin, onClose }) {
             Cancel
           </button>
           <div style={{ textAlign: "center", marginTop: "1rem", paddingTop: "1rem", borderTop: `1px solid ${T.border}`, fontSize: ".73rem", color: T.textLight }}>
-            Forgot password? Contact <span style={{ color: T.navy, fontWeight: 600 }}>itsupport@pdn.ac.lk</span>
+            New to the portal? <span onClick={onSwitchToRegister} style={{ color: T.navy, fontWeight: 600, cursor: "pointer", textDecoration: "underline" }}>Create an account</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Registration Modal ────────────────────────────────
+export function RegisterModal({ onSuccess, onClose, onSwitchToLogin }) {
+  const [role, setRole] = useState("student");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleRegister = async () => {
+    // Validation
+    if (!name || !email || !password || !confirmPassword) {
+      setError("Please fill in all fields.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
+
+    if (!email.includes("@")) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError("");
+
+      const response = await registerUser({ name, email, password, role });
+
+      // After successful registration, show message and switch to login
+      alert("Registration successful! Please log in with your credentials.");
+      onSuccess(); // Close the register modal
+      if (onSwitchToLogin) onSwitchToLogin(); // Switch back to login
+
+    } catch (err) {
+      console.error("Registration failed:", err);
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Failed to create account. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="modal-bg" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={{ background: T.white, borderRadius: 4, width: "100%", maxWidth: 450, overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,.28)" }}>
+
+        {/* Header */}
+        <div style={{ background: `linear-gradient(135deg,${T.green},${T.navy})`, padding: "2rem", textAlign: "center", borderBottom: `3px solid ${T.gold}` }}>
+          <div style={{ width: 52, height: 52, borderRadius: "50%", background: T.gold, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem", margin: "0 auto 1rem" }}>✨</div>
+          <div style={{ color: T.gold, fontSize: ".67rem", fontWeight: 700, letterSpacing: ".15em", textTransform: "uppercase", marginBottom: ".3rem" }}>New Account</div>
+          <div style={{ color: T.white, fontSize: "1.15rem", fontWeight: 700, fontFamily: "'Noto Serif',serif" }}>Join CV & AI Laboratory</div>
+          <div style={{ color: "#8faac0", fontSize: ".79rem" }}>University of Peradeniya</div>
+        </div>
+
+        <div style={{ padding: "1.75rem" }}>
+          {/* Role selector */}
+          <div style={{ marginBottom: "1.25rem" }}>
+            <label className="inp-label">Account Type</label>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".5rem", marginTop: ".35rem" }}>
+              {[["student","Student"],["staff","Staff"]].map(([v, l]) => (
+                <button
+                  key={v}
+                  onClick={() => setRole(v)}
+                  style={{ padding: ".5rem", border: `1.5px solid ${role === v ? T.navy : T.border}`, background: role === v ? T.navy : "transparent", color: role === v ? T.white : T.textMid, borderRadius: 3, fontWeight: 600, fontSize: ".81rem" }}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {error && (
+            <div style={{ padding: "10px", marginBottom: "15px", background: "#fee2e2", color: "#991b1b", border: "1px solid #f87171", borderRadius: "3px", fontSize: "0.85rem" }}>
+              {error}
+            </div>
+          )}
+
+          <Field label="Full Name"              type="text"     placeholder="John Doe"        value={name}             onChange={(e) => setName(e.target.value)} />
+          <Field label="University Email"       type="email"    placeholder="id@pdn.ac.lk"   value={email}            onChange={(e) => setEmail(e.target.value)} />
+          <Field label="Password"               type="password" placeholder="••••••••"       value={password}         onChange={(e) => setPassword(e.target.value)} />
+          <Field label="Confirm Password"       type="password" placeholder="••••••••"       value={confirmPassword}   onChange={(e) => setConfirmPassword(e.target.value)} />
+
+          <button onClick={handleRegister} disabled={isLoading} className="btn-navy" style={{ width: "100%", padding: ".7rem", fontSize: ".9rem", background: T.green, opacity: isLoading ? 0.7 : 1 }}>
+            {isLoading ? "Creating account..." : "Create Account"}
+          </button>
+
+          <button onClick={onClose} style={{ width: "100%", padding: ".55rem", background: "none", border: "none", color: T.textLight, fontSize: ".79rem", marginTop: ".5rem", cursor: "pointer" }}>
+            Cancel
+          </button>
+          <div style={{ textAlign: "center", marginTop: "1rem", paddingTop: "1rem", borderTop: `1px solid ${T.border}`, fontSize: ".73rem", color: T.textLight }}>
+            Already have an account? <span onClick={onSwitchToLogin} style={{ color: T.navy, fontWeight: 600, cursor: "pointer", textDecoration: "underline" }}>Sign in here</span>
           </div>
         </div>
       </div>

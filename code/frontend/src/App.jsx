@@ -7,7 +7,7 @@ import { GLOBAL_CSS } from "./styles/theme";
 import { TopBar, LogoBar, MainNav, Breadcrumb, Footer } from "./components/Layout";
 
 // Modals
-import { BookingModal, LoginModal } from "./components/Modals";
+import { BookingModal, LoginModal, RegisterModal } from "./components/Modals";
 
 // Public pages
 import { HomePage }        from "./pages/HomePage";
@@ -65,6 +65,7 @@ export default function App() {
   const [section,     setSection]     = useState("home");
   const [showBooking, setShowBooking] = useState(false);
   const [showLogin,   setShowLogin]   = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
   const [userRole,    setUserRole]    = useState(null);   // null = public website
   const [portalTab,   setPortalTab]   = useState("dashboard");
 
@@ -150,7 +151,20 @@ export default function App() {
       <Footer />
 
       {showBooking && <BookingModal onClose={() => setShowBooking(false)} />}
-      {showLogin   && <LoginModal  onLogin={handleLogin} onClose={() => setShowLogin(false)} />}
+      {showLogin && (
+        <LoginModal
+          onLogin={handleLogin}
+          onClose={() => setShowLogin(false)}
+          onSwitchToRegister={() => { setShowLogin(false); setShowRegister(true); }}
+        />
+      )}
+      {showRegister && (
+        <RegisterModal
+          onSuccess={() => setShowRegister(false)}
+          onClose={() => setShowRegister(false)}
+          onSwitchToLogin={() => { setShowRegister(false); setShowLogin(true); }}
+        />
+      )}
     </div>
   );
 }

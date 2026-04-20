@@ -1,10 +1,15 @@
 const pool = require("../config/db");
+const { sendBookingConfirmationEmail, sendBookingStatusEmail, sendAdminNotificationEmail } = require("../services/emailService");
 
 // 1. Submit a new booking (For Students)
 const createBooking = async (req, res) => {
     try {
         const { requestType, resource, date, time, purpose } = req.body;
         const userId = req.user.id; // Comes from your verifyToken middleware
+
+        // Get user info for email
+        const userResult = await pool.query("SELECT name, email FROM users WHERE id = $1", [userId]);
+        const user = userResult.rows[0];
 
         const result = await pool.query(
             `INSERT INTO reservations 
@@ -13,7 +18,25 @@ const createBooking = async (req, res) => {
             [userId, requestType, resource, date, time, purpose]
         );
 
-        res.status(201).json({ message: "Booking submitted", booking: result.rows[0] });
+        const booking = result.rows[0];
+
+        // Send confirmation email to student (non-blocking)
+        sendBookingConfirmationEmail(user.email, user.name, {
+            requestType,
+            resource,
+            date,
+            time,
+            purpose
+        }).catch(err => console.error("Email sending failed (non-critical):", err.message));
+
+        // Notify admin of new booking (non-blocking)
+        sendAdminNotificationEmail(
+            process.env.ADMIN_EMAIL || "admin@pdn.ac.lk",
+            `New booking request from ${user.name}`,
+            { userId, requestType, resource, date, time }
+        ).catch(err => console.error("Admin email failed (non-critical):", err.message));
+
+        res.status(201).json({ message: "Booking submitted", booking });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error creating booking" });
@@ -61,7 +84,28 @@ const updateBookingStatus = async (req, res) => {
             return res.status(404).json({ message: "Booking not found" });
         }
 
-        res.json({ message: "Booking updated", booking: result.rows[0] });
+        const booking = result.rows[0];
+
+        // Get user info for email
+        const userResult = await pool.query("SELECT name, email FROM users WHERE id = $1", [booking.user_id]);
+        const user = userResult.rows[0];
+
+        // Send status update email (non-blocking)
+        if (user) {
+            sendBookingStatusEmail(
+                user.email,
+                user.name,
+                {
+                    requestType: booking.request_type,
+                    resource: booking.resource,
+                    date: booking.booking_date,
+                    time: booking.time_slot
+                },
+                status
+            ).catch(err => console.error("Email sending failed (non-critical):", err.message));
+        }
+
+        res.json({ message: "Booking updated", booking });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error updating booking" });

@@ -38,7 +38,7 @@ This project utilizes a modern, decoupled architecture to ensure scalability and
 | Component | Technology | Description |
 | :--- | :--- | :--- |
 | **Frontend** | ![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB) | Interactive UI for calendars and dashboards. |
-| **Backend** | ![Django](https://img.shields.io/badge/Django-092E20?style=flat-square&logo=django&logoColor=white) | Robust API handling, Auth, and Admin interface. |
+| **Backend** | ![node.js](https://img.shields.io/badge/Django-092E20?style=flat-square&logo=django&logoColor=white) | Robust API handling, Auth, and Admin interface. |
 | **Database** | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white) | Relational database for complex booking logic. |
 | **Styling** | ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white) | Rapid UI development. |
 | **API** | REST / DRF | Django REST Framework for client-server communication. |

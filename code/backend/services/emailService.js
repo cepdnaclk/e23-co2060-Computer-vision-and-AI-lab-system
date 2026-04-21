@@ -20,6 +20,9 @@ transporter.verify((error, success) => {
     }
 });
 
+// Portal URL from environment or default
+const portalUrl = process.env.PORTAL_URL || "http://localhost:5173";
+
 // ── Send Registration Confirmation Email ─────────────
 const sendRegistrationEmail = async (email, name, role) => {
     try {
@@ -40,7 +43,7 @@ const sendRegistrationEmail = async (email, name, role) => {
                     </div>
                     
                     <p>You can now log in to the portal using your credentials at:</p>
-                    <p><a href="http://localhost:5173" style="color: #c4a747; text-decoration: none; font-weight: bold;">CV & AI Lab Portal</a></p>
+                    <p><a href="${portalUrl}" style="color: #c4a747; text-decoration: none; font-weight: bold;">CV & AI Lab Portal</a></p>
                     
                     <p><strong>Next Steps:</strong></p>
                     <ul>
@@ -91,7 +94,7 @@ const sendBookingConfirmationEmail = async (email, name, booking) => {
                     <p><strong>Current Status:</strong> <span style="color: #f59e0b; font-weight: bold;">Pending</span></p>
                     <p>You will receive another email notification once your booking is approved or rejected.</p>
                     
-                    <p>Track your booking status in the <a href="http://localhost:5173" style="color: #c4a747; text-decoration: none; font-weight: bold;">Portal Dashboard</a></p>
+                    <p>Track your booking status in the <a href="${portalUrl}" style="color: #c4a747; text-decoration: none; font-weight: bold;">Portal Dashboard</a></p>
                     
                     <p style="color: #999; font-size: 12px; margin-top: 30px;">
                         Questions? Contact: itsupport@pdn.ac.lk
@@ -147,7 +150,7 @@ const sendBookingStatusEmail = async (email, name, booking, status, feedbackNote
                         <p>If you have questions about this decision, please contact the lab administration at itsupport@pdn.ac.lk</p>
                     `}
                     
-                    <p>View your bookings in the <a href="http://localhost:5173" style="color: #c4a747; text-decoration: none; font-weight: bold;">Portal Dashboard</a></p>
+                    <p>View your bookings in the <a href="${portalUrl}" style="color: #c4a747; text-decoration: none; font-weight: bold;">Portal Dashboard</a></p>
                     
                     <p style="color: #999; font-size: 12px; margin-top: 30px;">
                         CV & AI Laboratory • University of Peradeniya<br>

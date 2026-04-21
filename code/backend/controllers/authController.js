@@ -1,6 +1,7 @@
 const pool = require("../config/db");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { sendRegistrationEmail } = require("../services/emailService");
 
 // REGISTER
 const register = async (req, res) => {
@@ -28,6 +29,11 @@ const register = async (req, res) => {
         const result = await pool.query(
             "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id, name, email, role",
             [name, email, hashedPassword, role || "student"]
+        );
+
+        // Send registration confirmation email (non-blocking)
+        sendRegistrationEmail(email, name, role || "student").catch(err => 
+            console.error("Email sending failed (non-critical):", err.message)
         );
 
         res.status(201).json({ message: "User registered", user: result.rows[0] });

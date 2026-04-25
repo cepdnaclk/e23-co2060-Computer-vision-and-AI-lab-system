@@ -8,7 +8,8 @@ dotenv.config();
 
 // Create Express app
 const app = express();
-app.use(cors({ origin: "http://localhost:5173" }));
+// Allowed all origins for local development flexibility
+app.use(cors());
 app.use(express.json());
 
 // Import routes

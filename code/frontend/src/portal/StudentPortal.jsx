@@ -1,63 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { T } from "../styles/theme";
-import { Badge, Field, PStat, PTable, PanelTitle, QuickBtn } from "../components/UI";
-import { PROJECTS, EQUIPMENT, ALL_RESERVATIONS } from "../data/labData";
-import { createBooking } from "../services/api";
+import { Badge, Field, PTable } from "../components/UI";
+import { EQUIPMENT } from "../data/labData";
+import { getBookings, createBooking } from "../services/api";
 
-const MY_RESERVATIONS = [
-  { id:"R-001", resource:"GPU Cluster (A100)", date:"2025-03-12", time:"10:00–12:00", status:"Approved", fee:"LKR 1,000" },
-  { id:"R-002", resource:"Drone Fleet",        date:"2025-03-14", time:"14:00–16:00", status:"Pending",  fee:"LKR 800"   },
-  { id:"R-003", resource:"Camera Array",       date:"2025-03-20", time:"09:00–11:00", status:"Approved", fee:"LKR 600"   },
-];
-
-// ── Dashboard ─────────────────────────────────────────
-function Dashboard({ setShowBooking }) {
+// ── QR Pass Modal ─────────────────────────────────────
+function QRPassModal({ booking, onClose }) {
+  if (!booking) return null;
   return (
-    <div className="fade-up">
-      <div style={{ marginBottom: "1.5rem" }}>
-        <h2 style={{ fontFamily: "'Noto Serif',serif", fontSize: "1.4rem", fontWeight: 700, color: T.navyDark }}>Welcome, Sarah Kim</h2>
-        <div style={{ color: T.textLight, fontSize: ".81rem" }}>PhD Candidate · Computer Science · CV & AI Laboratory</div>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "1rem", marginBottom: "1.5rem" }}>
-        <PStat icon="📅" label="Active Bookings" value="2"   sub="1 pending approval" color={T.navyLight} />
-        <PStat icon="⚡" label="GPU Hours Used"  value="14h" sub="This month"          color={T.green}    />
-        <PStat icon="🔬" label="Projects"         value="2"   sub="1 active"            color={T.navy}     />
-        <PStat icon="💬" label="Consultations"    value="1"   sub="Scheduled Mar 18"    color={T.gold}     />
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "1.5rem" }}>
-        <div>
-          <PanelTitle>Recent Reservations</PanelTitle>
-          <PTable
-            cols={["ID","Resource","Date","Time","Status","Fee"]}
-            rows={MY_RESERVATIONS.map(r => [r.id, r.resource, r.date, r.time, <Badge label={r.status} />, r.fee])}
-          />
+    <div className="modal-bg" onClick={e => e.target === e.currentTarget && onClose()} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+      <div style={{ background: T.white, borderRadius: 8, padding: "2rem", maxWidth: 350, textAlign: "center", boxShadow: "0 20px 60px rgba(0,0,0,.28)" }}>
+        <h3 style={{ color: T.navyDark, marginBottom: "1rem" }}>Lab Access Pass</h3>
+        <p style={{ fontSize: "0.85rem", color: T.textLight, marginBottom: "1.5rem" }}>Scan this code at the lab entrance.</p>
+        
+        <div style={{ border: `2px solid ${T.border}`, padding: "1rem", borderRadius: 8, display: "inline-block", marginBottom: "1.5rem" }}>
+          <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=BOOKING-${booking.id}-${booking.resource}`} alt="QR Code" />
         </div>
-        <div>
-          <PanelTitle>Quick Actions</PanelTitle>
-          <div style={{ display: "grid", gap: ".6rem" }}>
-            <QuickBtn icon="📷" label="Book Equipment"       onClick={() => setShowBooking(true)} />
-            <QuickBtn icon="⚡" label="Request GPU Time"     onClick={() => setShowBooking(true)} />
-            <QuickBtn icon="💬" label="Request Consultation" onClick={() => setShowBooking(true)} />
-            <QuickBtn icon="🏛️" label="Reserve Lab Space"   onClick={() => setShowBooking(true)} />
-          </div>
+        
+        <div style={{ background: T.offWhite, padding: "0.8rem", borderRadius: 4, textAlign: "left", fontSize: "0.8rem", marginBottom: "1.5rem" }}>
+          <div><strong>ID:</strong> R-{booking.id}</div>
+          <div><strong>Resource:</strong> {booking.resource}</div>
+          <div><strong>Date:</strong> {new Date(booking.booking_date).toLocaleDateString()}</div>
+          <div><strong>Time:</strong> {booking.time_slot}</div>
         </div>
+        
+        <button onClick={onClose} className="btn-navy" style={{ width: "100%", padding: "0.6rem" }}>Close</button>
       </div>
     </div>
   );
 }
-
 // ── Booking Form ──────────────────────────────────────
-function BookingForm({ active }) {
-  const TITLES = {
-    equipment:"Equipment Booking", reservation:"Lab Space Reservation",
-    gpu:"GPU Processing Request",  consultation:"Consultation Request",
-  };
-  const OPTS = {
-    gpu:          ["Training Run (A100)","Inference Batch","Fine-tuning Job"],
-    consultation: ["CV Methodology","Dataset Advice","Model Selection","Publication Review"],
-  };
+function BookingForm() {
+  const TITLE = "Resource Booking Request";
+  const OPTIONS = [
+    ...EQUIPMENT.map(e => e.name),
+    "Training Run (A100)",
+    "Consultation - CV Methodology",
+    "Lab Space Access"
+  ];
 
   // 1. Add state to track user input
   const [form, setForm] = useState({ resource: "", date: "", time: "", purpose: "" });
@@ -76,7 +56,7 @@ function BookingForm({ active }) {
     try {
       setIsSubmitting(true);
       await createBooking({
-        requestType: TITLES[active], // Uses the title (e.g., "Equipment Booking") as the type
+        requestType: "General Booking",
         resource: form.resource,
         date: form.date,
         time: form.time,
@@ -98,12 +78,12 @@ function BookingForm({ active }) {
 
   return (
     <div className="fade-up">
-      <h2 style={{ fontFamily: "'Noto Serif',serif", fontSize: "1.3rem", fontWeight: 700, color: T.navyDark, marginBottom: ".35rem" }}>{TITLES[active]}</h2>
+      <h2 style={{ fontFamily: "'Noto Serif',serif", fontSize: "1.3rem", fontWeight: 700, color: T.navyDark, marginBottom: ".35rem" }}>{TITLE}</h2>
       <p style={{ color: T.textLight, fontSize: ".83rem", marginBottom: "1.5rem" }}>Submit your request. All bookings are subject to staff/admin approval.</p>
       <div style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 3, padding: "1.75rem", maxWidth: 520 }}>
         
         {/* 3. Bind the fields to our state */}
-        <Field label="Resource / Type" value={form.resource} onChange={set("resource")} options={OPTS[active] || EQUIPMENT.map(e => e.name)} />
+        <Field label="Resource / Type" value={form.resource} onChange={set("resource")} options={OPTIONS} />
         <Field label="Preferred Date"  type="date" value={form.date} onChange={set("date")} />
         <Field label="Time Slot"       value={form.time} onChange={set("time")} options={["08:00–10:00","10:00–12:00","13:00–15:00","15:00–17:00","17:00–19:00"]} />
         <Field label="Purpose / Notes" rows={3}   value={form.purpose} onChange={set("purpose")} placeholder="Describe your intended use..." />
@@ -122,68 +102,50 @@ function BookingForm({ active }) {
   );
 }
 
-// ── Usage History ─────────────────────────────────────
+// ── Usage History (My Bookings) ───────────────────────
 function UsageHistory() {
-  const all = [...MY_RESERVATIONS, { id:"R-000", resource:"HPC Server", date:"2025-02-20", time:"13:00–15:00", status:"Approved", fee:"LKR 800" }];
-  return (
-    <div className="fade-up">
-      <h2 style={{ fontFamily: "'Noto Serif',serif", fontSize: "1.3rem", fontWeight: 700, color: T.navyDark, marginBottom: "1.25rem" }}>Usage History</h2>
-      <PTable cols={["ID","Resource","Date","Time","Status","Fee"]} rows={all.map(r => [r.id, r.resource, r.date, r.time, <Badge label={r.status} />, r.fee])} />
-    </div>
-  );
-}
+  const [history, setHistory] = useState([]);
+  const [selectedQR, setSelectedQR] = useState(null);
 
-// ── Projects ──────────────────────────────────────────
-function MyProjects() {
-  const mine = PROJECTS.filter(p => p.lead.includes("Kim") || p.id === 4);
-  return (
-    <div className="fade-up">
-      <h2 style={{ fontFamily: "'Noto Serif',serif", fontSize: "1.3rem", fontWeight: 700, color: T.navyDark, marginBottom: "1.25rem" }}>My Project Participation</h2>
-      <div style={{ display: "grid", gap: "1rem" }}>
-        {mine.map(p => (
-          <div key={p.title} style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 3, padding: "1.25rem", borderLeft: `4px solid ${p.status === "Active" ? T.green : T.textLight}` }}>
-            <div style={{ display: "flex", gap: ".6rem", marginBottom: ".4rem" }}>
-              <Badge label={p.status} />
-              <span style={{ color: T.textLight, fontSize: ".73rem" }}>{p.year}</span>
-            </div>
-            <div style={{ fontWeight: 700, color: T.navyDark, fontSize: ".95rem", fontFamily: "'Noto Serif',serif" }}>{p.title}</div>
-            <p style={{ color: T.textMid, fontSize: ".83rem", lineHeight: 1.6, marginTop: ".3rem" }}>{p.desc}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await getBookings();
+        setHistory(response.data);
+      } catch (error) {
+        console.error("Failed to load bookings", error);
+      }
+    };
+    fetchBookings();
+  }, []);
 
-// ── Profile ───────────────────────────────────────────
-function Profile() {
   return (
     <div className="fade-up">
-      <h2 style={{ fontFamily: "'Noto Serif',serif", fontSize: "1.3rem", fontWeight: 700, color: T.navyDark, marginBottom: "1.25rem" }}>My Profile</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "2rem", alignItems: "flex-start", maxWidth: 660 }}>
-        <div style={{ width: 70, height: 70, borderRadius: "50%", background: `linear-gradient(135deg,${T.navy},${T.navyLight})`, color: T.white, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "1rem" }}>SK</div>
-        <div style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 3, padding: "1.5rem" }}>
-          <Field label="Full Name"        value="Sarah Kim"              onChange={() => {}} />
-          <Field label="University Email" value="sarah.kim@pdn.ac.lk"   onChange={() => {}} />
-          <Field label="Department"       value="Computer Science"        onChange={() => {}} />
-          <Field label="Programme"        value="PhD in Computer Science" onChange={() => {}} />
-          <Field label="Research Area"    value="Autonomous Drones"       onChange={() => {}} />
-          <button className="btn-navy" style={{ padding: ".6rem 1.5rem" }}>Save Changes</button>
-        </div>
-      </div>
+      <h2 style={{ fontFamily: "'Noto Serif',serif", fontSize: "1.3rem", fontWeight: 700, color: T.navyDark, marginBottom: "1.25rem" }}>My Bookings</h2>
+      <PTable 
+        cols={["ID","Resource","Date","Time","Status","Pass"]} 
+        rows={history.map(r => [
+          `R-${r.id}`, 
+          r.resource, 
+          new Date(r.booking_date).toLocaleDateString(), 
+          r.time_slot, 
+          <Badge key={`b-${r.id}`} label={r.status} color={r.status === "Approved" ? T.green : (r.status === "Rejected" ? T.red : T.amber)} />,
+          r.status === "Approved" ? (
+            <button key={`qr-${r.id}`} onClick={() => setSelectedQR(r)} style={{ padding: "4px 8px", background: T.navy, color: "white", border: "none", borderRadius: "3px", fontSize: "0.75rem", cursor: "pointer", fontWeight: "bold" }}>
+              📷 View Pass
+            </button>
+          ) : <span key={`np-${r.id}`} style={{ color: T.textLight, fontSize: "0.75rem" }}>N/A</span>
+        ])} 
+      />
+      {selectedQR && <QRPassModal booking={selectedQR} onClose={() => setSelectedQR(null)} />}
     </div>
   );
 }
 
 // ── Main Student Portal ───────────────────────────────
-export function StudentPortal({ active, setShowBooking }) {
-  const BOOKING_TABS = ["equipment","reservation","gpu","consultation"];
-
-  if (active === "dashboard")           return <Dashboard setShowBooking={setShowBooking} />;
-  if (BOOKING_TABS.includes(active))    return <BookingForm active={active} setShowBooking={setShowBooking} />;
-  if (active === "history")             return <UsageHistory />;
-  if (active === "projects")            return <MyProjects />;
-  if (active === "profile")             return <Profile />;
+export function StudentPortal({ active }) {
+  if (active === "booking") return <BookingForm />;
+  if (active === "history") return <UsageHistory />;
 
   return <div style={{ padding: "2rem", color: T.textMid, fontSize: ".87rem" }}>Select a section from the sidebar.</div>;
 }

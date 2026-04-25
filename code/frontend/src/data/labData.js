@@ -80,32 +80,13 @@ export const TICKER_ITEMS = [
 
 export const PORTAL_MENUS = {
   student: [
-    { id:"dashboard",    icon:"📊", label:"Dashboard"              },
-    { id:"reservation",  icon:"🏛️", label:"Lab Space Reservation"  },
-    { id:"equipment",    icon:"📷", label:"Equipment Booking"       },
-    { id:"gpu",          icon:"⚡", label:"GPU Processing Requests" },
-    { id:"consultation", icon:"💬", label:"Consultation Requests"   },
-    { id:"projects",     icon:"🔬", label:"Project Participation"   },
-    { id:"history",      icon:"📋", label:"Usage History"           },
-    { id:"profile",      icon:"👤", label:"Profile"                 },
+    { id:"booking", icon:"📷", label:"Book Resource" },
+    { id:"history", icon:"📋", label:"My Bookings"   },
   ],
   staff: [
-    { id:"dashboard",    icon:"📊", label:"Dashboard"              },
-    { id:"consults",     icon:"💬", label:"Consultation Requests"   },
-    { id:"projects",     icon:"🔬", label:"Research Projects"       },
-    { id:"gpu-monitor",  icon:"⚡", label:"GPU Usage Monitor"       },
-    { id:"reservations", icon:"📅", label:"Equipment Reservations"  },
-    { id:"profile",      icon:"👤", label:"Profile"                 },
   ],
   admin: [
-    { id:"dashboard",    icon:"📊", label:"Dashboard"              },
-    { id:"users",        icon:"👥", label:"User Management"         },
     { id:"equip-mgmt",   icon:"🛠️", label:"Equipment Management"   },
     { id:"reservations", icon:"📅", label:"Reservation Approval"    },
-    { id:"gpu-mgmt",     icon:"⚡", label:"GPU Workload"            },
-    { id:"usage",        icon:"📈", label:"Usage Tracking"          },
-    { id:"fees",         icon:"💳", label:"Fee & Payments"          },
-    { id:"proj-mgmt",    icon:"🔬", label:"Project Management"      },
-    { id:"news-mgmt",    icon:"📰", label:"News & Events"           },
   ],
 };

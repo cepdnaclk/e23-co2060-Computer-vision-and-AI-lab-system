@@ -1,4 +1,5 @@
 const pool = require("../config/db"); //connecting to the database
+const xlsx = require('xlsx');
 
 //get all items
 const getAllItems = async (req, res) => {
@@ -45,6 +46,7 @@ const deleteItem=async(req,res)=>{
         res.status(500).json({ message: "Error deleting item" });
     }
 }
+
 module.exports = {
     getAllItems,
     createItem,

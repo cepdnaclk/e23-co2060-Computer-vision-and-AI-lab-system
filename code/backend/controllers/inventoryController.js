@@ -15,13 +15,13 @@ const getAllItems = async (req, res) => {
 //Post new items
 const createItem=async(req,res)=>{
     try {
-        const { name, category, description } = req.body;
+        const { name, category, description, status, spec, fee } = req.body;
         if (!name || !category) {
             return res.status(400).json({ message: "Name and category are required" });
         }
         const result = await pool.query(
-            "INSERT INTO inventory (name, category, description) VALUES ($1, $2, $3) RETURNING *",
-            [name, category, description]
+            "INSERT INTO inventory (name, category, description, spec, fee, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+            [name, category, description, spec, fee, status || 'available']
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
@@ -51,10 +51,10 @@ const deleteItem=async(req,res)=>{
 const updateItem = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, category, description, status } = req.body;
+        const { name, category, description, status, spec, fee } = req.body;
         const result = await pool.query(
-            "UPDATE inventory SET name = $1, category = $2, description = $3, status = $4 WHERE id = $5 RETURNING *",
-            [name, category, description, status, id]
+            "UPDATE inventory SET name = $1, category = $2, description = $3, status = $4, spec = $5, fee = $6 WHERE id = $7 RETURNING *",
+            [name, category, description, status, spec, fee, id]
         );
         if (result.rows.length === 0) {
             return res.status(404).json({ message: "Item not found" });

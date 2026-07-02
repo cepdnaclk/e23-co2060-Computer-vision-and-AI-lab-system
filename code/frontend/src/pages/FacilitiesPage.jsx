@@ -1,34 +1,36 @@
 import { T } from "../styles/theme";
-import { SectionLabel, SectionTitle, Divider } from "../components/UI";
-import { EQUIPMENT } from "../data/labData";
+import { Button, Card, Divider, SectionLabel, SectionTitle } from "../components/UI";
+import { renderIcon } from "../components/iconUtils";
+import { EQUIPMENT, ICONS } from "../data/labData";
+import { LuArrowRight } from "react-icons/lu";
 
 export function FacilitiesPage({ setShowBooking }) {
   return (
-    <div style={{ maxWidth: 1240, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
+    <div className="page-shell section-padding">
       <SectionLabel text="Facilities" />
-      <SectionTitle>Equipment & Infrastructure</SectionTitle>
+      <SectionTitle>Equipment and infrastructure</SectionTitle>
       <Divider />
-      <p style={{ color: T.textMid, marginBottom: "2rem", fontSize: ".9rem", maxWidth: 680, lineHeight: 1.7 }}>
-        All equipment is bookable through our internal reservation system. Registered lab members may request access via the portal or booking form.
+      <p style={{ color: T.textMid, fontSize: ".96rem", lineHeight: 1.8, maxWidth: 760, marginBottom: "1.4rem" }}>
+        The public site remains driven by the curated static list for now. Live equipment editing is available inside the authenticated internal area, where the backend requires a token.
       </p>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(285px,1fr))", gap: "1.1rem" }}>
-        {EQUIPMENT.map(eq => (
-          <div key={eq.name} className="card" style={{ padding: "1.5rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: ".75rem" }}>
-              <span style={{ fontSize: "1.75rem" }}>{eq.icon}</span>
-              <span style={{ padding: "2px 8px", background: eq.avail ? `${T.green}18` : `${T.red}14`, color: eq.avail ? T.green : T.red, border: `1px solid ${eq.avail ? T.green + "40" : T.red + "30"}`, fontSize: ".69rem", fontWeight: 700, borderRadius: 2 }}>
-                {eq.avail ? "Available" : "In Use"}
-              </span>
-            </div>
-            <div style={{ fontWeight: 700, color: T.navyDark, fontSize: ".92rem", marginBottom: ".2rem" }}>{eq.name}</div>
-            <div style={{ color: T.textMid, fontSize: ".82rem", marginBottom: ".35rem" }}>{eq.spec}</div>
-            <div style={{ color: T.textLight, fontSize: ".75rem", marginBottom: "1rem" }}>Category: {eq.cat} · Fee: {eq.fee}</div>
-            <button onClick={() => setShowBooking(true)} className="btn-outline" style={{ width: "100%", fontSize: ".8rem" }}>
-              {eq.avail ? "Book Now" : "Join Waitlist"}
-            </button>
-          </div>
-        ))}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem" }}>
+        {EQUIPMENT.map((equipment) => {
+          const Icon = ICONS[equipment.iconKey];
+          return (
+            <Card key={equipment.name} style={{ padding: "1.2rem", borderTop: `3px solid ${equipment.avail ? T.success : T.warning}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: "1rem", marginBottom: ".8rem" }}>
+                <div style={{ width: 44, height: 44, borderRadius: 14, background: `${T.navy}10`, color: T.navy, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{renderIcon(Icon, { size: 19 })}</div>
+                <span style={{ padding: ".32rem .6rem", borderRadius: 999, background: equipment.avail ? `${T.success}12` : `${T.warning}12`, color: equipment.avail ? T.success : T.warning, border: `1px solid ${equipment.avail ? `${T.success}26` : `${T.warning}26`}`, fontSize: ".72rem", fontWeight: 700 }}>{equipment.avail ? "Available" : "In use"}</span>
+              </div>
+              <div style={{ fontWeight: 700, color: T.navyDark, fontSize: ".98rem" }}>{equipment.name}</div>
+              <div style={{ color: T.textMid, fontSize: ".86rem", marginTop: ".35rem" }}>{equipment.spec}</div>
+              <div style={{ color: T.textLight, fontSize: ".79rem", marginTop: ".35rem" }}>Category: {equipment.cat} · Fee: {equipment.fee}</div>
+              <div style={{ marginTop: "1rem" }}>
+                <Button variant="outline" icon={LuArrowRight} fullWidth onClick={() => setShowBooking(true)}>{equipment.avail ? "Book now" : "Join waitlist"}</Button>
+              </div>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

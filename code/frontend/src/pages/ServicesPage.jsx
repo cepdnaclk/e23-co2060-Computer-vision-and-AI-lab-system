@@ -1,28 +1,32 @@
 import { T } from "../styles/theme";
-import { SectionLabel, SectionTitle, Divider } from "../components/UI";
-import { SERVICES } from "../data/labData";
+import { Button, Card, Divider, SectionLabel, SectionTitle } from "../components/UI";
+import { renderIcon } from "../components/iconUtils";
+import { ICONS, SERVICES } from "../data/labData";
+import { LuArrowRight } from "react-icons/lu";
 
 export function ServicesPage({ setShowBooking }) {
   return (
-    <div style={{ maxWidth: 1240, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
+    <div className="page-shell section-padding">
       <SectionLabel text="Services" />
-      <SectionTitle>Lab Services & Access</SectionTitle>
+      <SectionTitle>Lab services and access</SectionTitle>
       <Divider />
-      <p style={{ color: T.textMid, marginBottom: "2rem", fontSize: ".9rem", lineHeight: 1.7 }}>
-        Available to registered students, staff, and approved external collaborators. All requests are processed through the internal portal.
+      <p style={{ color: T.textMid, fontSize: ".96rem", lineHeight: 1.8, maxWidth: 760, marginBottom: "1.4rem" }}>
+        Access is structured and intentionally modest. Requests are routed through the booking flow, with approval handled in the authenticated workspace.
       </p>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(275px,1fr))", gap: "1.25rem" }}>
-        {SERVICES.map(s => (
-          <div key={s.title} className="card" style={{ padding: "2rem", borderTop: `3px solid ${T.navy}` }}>
-            <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>{s.icon}</div>
-            <h3 style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, color: T.navyDark, marginBottom: ".5rem" }}>{s.title}</h3>
-            <p style={{ color: T.textMid, fontSize: ".87rem", lineHeight: 1.65, marginBottom: "1.25rem" }}>{s.desc}</p>
-            <button onClick={() => setShowBooking(true)} className="btn-navy" style={{ width: "100%" }}>
-              Request Access
-            </button>
-          </div>
-        ))}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1rem" }}>
+        {SERVICES.map((service) => {
+          const Icon = ICONS[service.iconKey];
+          return (
+            <Card key={service.title} style={{ padding: "1.2rem", borderTop: `3px solid ${T.navy}` }}>
+              <div style={{ width: 42, height: 42, borderRadius: 14, background: `${T.navy}10`, color: T.navy, display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: "1rem" }}>
+                {renderIcon(Icon, { size: 18 })}
+              </div>
+              <h3 style={{ margin: 0, color: T.navyDark, fontSize: "1.08rem" }}>{service.title}</h3>
+              <p style={{ color: T.textMid, fontSize: ".88rem", lineHeight: 1.7, marginTop: ".55rem" }}>{service.desc}</p>
+              <Button variant="primary" icon={LuArrowRight} fullWidth onClick={() => setShowBooking(true)}>Request access</Button>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

@@ -19,11 +19,17 @@ app.get("/", (req, res) => res.send("CV & AI Lab API is running..."));
 const inventoryRoutes = require("./routes/inventoryRoutes");
 const authRoutes = require("./routes/authRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
+const usersRoutes = require("./routes/usersRoutes");
+const peopleRoutes = require("./routes/peopleRoutes");
+const newsRoutes = require("./routes/newsRoutes");
 
 // Use routes
 app.use("/api/items", inventoryRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/users", usersRoutes);
+app.use("/api/people", peopleRoutes);
+app.use("/api/news", newsRoutes);
 
 // Test database connection before starting
 const startServer = async () => {

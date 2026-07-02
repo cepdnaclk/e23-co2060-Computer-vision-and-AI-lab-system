@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 
 // Styles
 import { GLOBAL_CSS } from "./styles/theme";
@@ -27,6 +27,22 @@ import { StudentPortal } from "./portal/StudentPortal";
 import { StaffPortal }   from "./portal/StaffPortal";
 import { AdminPortal }   from "./portal/AdminPortal";
 
+function restoreSession() {
+  try {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) return { role: null, tab: "overview" };
+    const parsedUser = JSON.parse(storedUser);
+    const role = parsedUser.role === "officer" ? "admin" : parsedUser.role;
+    return {
+      role,
+      tab: role === "student" ? "history" : role === "admin" ? "overview" : "dashboard",
+    };
+  } catch (error) {
+    console.error("Failed to restore session", error);
+    return { role: null, tab: "dashboard" };
+  }
+}
+
 // ─────────────────────────────────────────────────────
 // PUBLIC PAGE ROUTER
 // ─────────────────────────────────────────────────────
@@ -48,9 +64,6 @@ function PublicPage({ section, setSection, setShowBooking, setShowLogin }) {
   }
 }
 
-// ─────────────────────────────────────────────────────
-// PORTAL CONTENT ROUTER
-// ─────────────────────────────────────────────────────
 function PortalContent({ role, active, setShowBooking }) {
   if (role === "student") return <StudentPortal active={active} setShowBooking={setShowBooking} />;
   if (role === "staff")   return <StaffPortal   active={active} />;
@@ -58,54 +71,33 @@ function PortalContent({ role, active, setShowBooking }) {
   return null;
 }
 
-// ─────────────────────────────────────────────────────
-// ROOT APP
-// ─────────────────────────────────────────────────────
 export default function App() {
+  const initialSession = restoreSession();
   const [section,     setSection]     = useState("home");
   const [showBooking, setShowBooking] = useState(false);
   const [showLogin,   setShowLogin]   = useState(false);
   const [showRegister, setShowRegister] = useState(false);
-  const [userRole,    setUserRole]    = useState(null);   // null = public website
-  const [portalTab,   setPortalTab]   = useState("dashboard");
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        // Translate "officer" back to "admin" for the frontend menus
-        const role = parsedUser.role === "officer" ? "admin" : parsedUser.role;
-        setUserRole(role);
-        // Students land on My Bookings, Admins on Reservation Approval by default
-        if (role === "student") setPortalTab("history");
-        else if (role === "admin") setPortalTab("reservations");
-      } catch (error) {
-        console.error("Failed to restore session", error);
-      }
-    }
-  }, []);
+  const [userRole,    setUserRole]    = useState(initialSession.role);
+  const [portalTab,   setPortalTab]   = useState(initialSession.tab);
 
   const handleLogin  = useCallback(role => {
     setUserRole(role);
-    // Students land on My Bookings, Admins on Reservation Approval by default
     if (role === "student") setPortalTab("history");
-    else if (role === "admin") setPortalTab("reservations");
+    else if (role === "admin") setPortalTab("overview");
     else setPortalTab("dashboard");
     setShowLogin(false);
   }, []);
 
   const handleLogout = useCallback(() => {
-    localStorage.removeItem("token"); // Destroy the token
-    localStorage.removeItem("user");  // Destroy the user data
-    setUserRole(null);                // Reset React state
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUserRole(null);
     setSection("home");
   }, []);
 
-  // ── PORTAL VIEW ──────────────────────────────────────
   if (userRole) {
     return (
-      <div className="portal-container" style={{ display: "flex", minHeight: "100vh", background: "#f4f6f9" }}>
+      <div className="portal-container" style={{ display: "flex", minHeight: "100vh", background: "var(--bg)" }}>
         <style>{GLOBAL_CSS}</style>
 
         <PortalSidebar
@@ -131,9 +123,8 @@ export default function App() {
     );
   }
 
-  // ── PUBLIC WEBSITE VIEW ──────────────────────────────
   return (
-    <div style={{ minHeight: "100vh", background: "#f4f6f9" }}>
+    <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
       <style>{GLOBAL_CSS}</style>
 
       <TopBar  onLogin={() => setShowLogin(true)} />

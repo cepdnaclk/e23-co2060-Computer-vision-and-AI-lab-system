@@ -1,52 +1,52 @@
 import { useState } from "react";
 import { T } from "../styles/theme";
-import { Badge, SectionLabel, SectionTitle, Divider } from "../components/UI";
+import { Badge, Button, Card, Divider, SectionLabel, SectionTitle } from "../components/UI";
 import { PROJECTS } from "../data/labData";
+import { LuChevronRight } from "react-icons/lu";
 
 export function ProjectsPage() {
   const [filter, setFilter] = useState("All");
-  const shown = filter === "All" ? PROJECTS : PROJECTS.filter(p => p.status === filter);
+  const shown = filter === "All" ? PROJECTS : PROJECTS.filter((project) => project.status === filter);
 
   return (
-    <div style={{ maxWidth: 1240, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
+    <div className="page-shell section-padding">
+      <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "end", flexWrap: "wrap", marginBottom: "1rem" }}>
         <div>
           <SectionLabel text="Projects" />
-          <SectionTitle>Research Projects</SectionTitle>
+          <SectionTitle>Research projects</SectionTitle>
           <Divider />
         </div>
-        <div style={{ display: "flex", gap: ".5rem" }}>
-          {["All", "Active", "Completed"].map(f => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              style={{ padding: ".4rem 1rem", border: `1px solid ${filter === f ? T.navy : T.border}`, background: filter === f ? T.navy : "transparent", color: filter === f ? T.white : T.textMid, borderRadius: 2, fontWeight: 600, fontSize: ".8rem", fontFamily: "'Open Sans',sans-serif" }}
-            >
-              {f}
-            </button>
+        <div style={{ display: "flex", gap: ".5rem", flexWrap: "wrap" }}>
+          {["All", "Active", "Completed"].map((value) => (
+            <Button key={value} variant={filter === value ? "primary" : "outline"} size="sm" onClick={() => setFilter(value)}>{value}</Button>
           ))}
         </div>
       </div>
 
       <div style={{ display: "grid", gap: "1rem" }}>
-        {shown.map(p => (
-          <div key={p.title} className="card" style={{ padding: "1.5rem", display: "flex", gap: "1.5rem", alignItems: "flex-start", borderLeft: `4px solid ${p.status === "Active" ? T.green : T.textLight}` }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: "flex", gap: ".6rem", alignItems: "center", marginBottom: ".5rem", flexWrap: "wrap" }}>
-                <Badge label={p.status} />
-                <span style={{ color: T.textLight, fontSize: ".74rem" }}>{p.year}</span>
+        {shown.map((project) => (
+          <Card key={project.title} style={{ padding: "1.2rem", borderLeft: `4px solid ${project.status === "Active" ? T.success : T.textLight}` }}>
+            <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "start", flexWrap: "wrap" }}>
+              <div style={{ flex: 1, minWidth: 260 }}>
+                <div style={{ display: "flex", gap: ".6rem", alignItems: "center", marginBottom: ".55rem", flexWrap: "wrap" }}>
+                  <Badge label={project.status} />
+                  <span style={{ color: T.textLight, fontSize: ".78rem" }}>{project.year}</span>
+                </div>
+                <h3 style={{ margin: 0, color: T.navyDark, fontSize: "1.12rem" }}>{project.title}</h3>
+                <div style={{ color: T.textLight, fontSize: ".8rem", marginTop: ".25rem" }}>Lead: {project.lead}</div>
+                <p style={{ color: T.textMid, fontSize: ".88rem", lineHeight: 1.7, marginTop: ".55rem", marginBottom: 0 }}>{project.desc}</p>
               </div>
-              <h3 style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: "1.05rem", color: T.navyDark, marginBottom: ".2rem" }}>{p.title}</h3>
-              <div style={{ color: T.textLight, fontSize: ".77rem", marginBottom: ".5rem" }}>Lead: {p.lead}</div>
-              <p style={{ color: T.textMid, fontSize: ".85rem", lineHeight: 1.65 }}>{p.desc}</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: ".4rem", maxWidth: 180 }}>
+                {project.tags.map((tag) => (
+                  <span key={tag} style={{ padding: ".28rem .55rem", borderRadius: 999, background: T.surfaceAlt, border: `1px solid ${T.border}`, color: T.navy, fontSize: ".72rem", fontWeight: 600 }}>{tag}</span>
+                ))}
+              </div>
             </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: ".4rem", maxWidth: 150, paddingTop: "1.8rem" }}>
-              {p.tags.map(t => (
-                <span key={t} style={{ padding: "2px 7px", background: T.offWhite, border: `1px solid ${T.border}`, color: T.navy, fontSize: ".71rem", fontWeight: 600, borderRadius: 2 }}>{t}</span>
-              ))}
-            </div>
-          </div>
+          </Card>
         ))}
+      </div>
+      <div style={{ marginTop: "1.25rem" }}>
+        <Button variant="outline" icon={LuChevronRight}>Research pipeline</Button>
       </div>
     </div>
   );

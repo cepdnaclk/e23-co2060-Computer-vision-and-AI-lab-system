@@ -1,46 +1,74 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { T } from "../styles/theme";
-import { SectionLabel, SectionTitle, Divider } from "../components/UI";
+import { Card, Divider, SectionLabel, SectionTitle } from "../components/UI";
 import { PEOPLE } from "../data/labData";
+import { getPeople } from "../services/api";
+import { LuUsers } from "react-icons/lu";
+
+function initials(name) {
+  return name.split(/\s+/).map((part) => part[0]).slice(0, 2).join("").toUpperCase();
+}
+
+function normalizePeople(rows) {
+  return Array.isArray(rows) ? rows.map((person) => ({
+    name: person.name,
+    title: person.title || person.role,
+    dept: person.dept,
+    research: person.research,
+    type: person.type,
+    initials: initials(person.name),
+  })) : [];
+}
 
 export function PeoplePage() {
   const [tab, setTab] = useState("all");
-  const shown = tab === "all" ? PEOPLE : PEOPLE.filter(p => p.type === tab);
+  const [people, setPeople] = useState(() => normalizePeople(PEOPLE));
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadPeople = async () => {
+      try {
+        const response = await getPeople();
+        const rows = normalizePeople(response.data);
+        if (!cancelled && rows.length > 0) setPeople(rows);
+      } catch (error) {
+        console.error("Failed to fetch people", error);
+      }
+    };
+    loadPeople();
+    return () => { cancelled = true; };
+  }, []);
+
+  const shown = useMemo(() => (tab === "all" ? people : people.filter((person) => person.type === tab)), [people, tab]);
 
   return (
-    <div style={{ maxWidth: 1240, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
+    <div className="page-shell section-padding">
+      <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "end", flexWrap: "wrap", marginBottom: "1rem" }}>
         <div>
           <SectionLabel text="People" />
-          <SectionTitle>Staff & Students</SectionTitle>
+          <SectionTitle>Staff and students</SectionTitle>
           <Divider />
         </div>
-        <div style={{ display: "flex", gap: ".5rem" }}>
-          {[["all","All"],["staff","Academic Staff"],["student","Students"]].map(([v, l]) => (
-            <button
-              key={v}
-              onClick={() => setTab(v)}
-              style={{ padding: ".4rem 1rem", border: `1px solid ${tab === v ? T.navy : T.border}`, background: tab === v ? T.navy : "transparent", color: tab === v ? T.white : T.textMid, borderRadius: 2, fontWeight: 600, fontSize: ".8rem", fontFamily: "'Open Sans',sans-serif" }}
-            >
-              {l}
+        <div style={{ display: "flex", gap: ".5rem", flexWrap: "wrap" }}>
+          {[ ["all", "All"], ["staff", "Staff"], ["student", "Students"] ].map(([value, label]) => (
+            <button key={value} type="button" onClick={() => setTab(value)} className="btn" style={{ borderRadius: 999, background: tab === value ? T.navy : T.surface, color: tab === value ? T.white : T.textMid, borderColor: tab === value ? T.navy : T.border }}>
+              {label}
             </button>
           ))}
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(210px,1fr))", gap: "1.1rem" }}>
-        {shown.map(m => (
-          <div key={m.name} className="card" style={{ padding: "1.5rem", textAlign: "center" }}>
-            <div style={{ width: 60, height: 60, borderRadius: "50%", background: `linear-gradient(135deg,${T.navy},${T.navyLight})`, color: T.white, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto .85rem", fontFamily: "'Roboto Mono',monospace", fontWeight: 700, fontSize: ".84rem" }}>
-              {m.initials}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem" }}>
+        {shown.map((person) => (
+          <Card key={`${person.name}-${person.title}`} style={{ padding: "1.2rem", textAlign: "center" }}>
+            <div style={{ width: 64, height: 64, borderRadius: 999, margin: "0 auto 1rem", background: `linear-gradient(135deg, ${T.navyDark}, ${T.navy})`, color: T.white, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: ".9rem", letterSpacing: ".04em" }}>{person.initials}</div>
+            <div style={{ fontWeight: 700, color: T.text, fontSize: ".95rem" }}>{person.name}</div>
+            <div style={{ color: T.navy, fontSize: ".78rem", fontWeight: 600, marginTop: ".2rem" }}>{person.title}</div>
+            <div style={{ color: T.textLight, fontSize: ".78rem", marginTop: ".2rem" }}>{person.dept}</div>
+            <div style={{ marginTop: ".8rem", padding: ".35rem .65rem", display: "inline-flex", alignItems: "center", gap: ".35rem", borderRadius: 999, background: T.surfaceAlt, border: `1px solid ${T.border}`, color: T.textMid, fontSize: ".72rem", fontWeight: 600 }}>
+              <LuUsers size={12} /> {person.research}
             </div>
-            <div style={{ fontWeight: 700, fontSize: ".9rem", color: T.textDark, marginBottom: ".2rem" }}>{m.name}</div>
-            <div style={{ color: T.navy, fontSize: ".75rem", fontWeight: 600, marginBottom: ".15rem" }}>{m.role}</div>
-            <div style={{ color: T.textLight, fontSize: ".73rem", marginBottom: ".6rem" }}>{m.dept}</div>
-            <span style={{ padding: "2px 8px", background: T.offWhite, border: `1px solid ${T.border}`, color: T.textMid, fontSize: ".69rem", borderRadius: 2 }}>
-              {m.research}
-            </span>
-          </div>
+          </Card>
         ))}
       </div>
     </div>

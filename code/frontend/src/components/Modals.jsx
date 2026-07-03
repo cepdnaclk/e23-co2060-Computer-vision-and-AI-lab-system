@@ -126,8 +126,7 @@ export function LoginModal({ onLogin, onClose, onSwitchToRegister }) {
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
       const backendRole = response.data.user.role;
-      const frontendRole = backendRole === "officer" ? "admin" : backendRole;
-      onLogin(frontendRole);
+      onLogin(backendRole);
     } catch (err) {
       console.error("Login failed:", err);
       setError(err.response?.data?.message || "Cannot connect to server. Please ensure the backend is running.");
@@ -165,13 +164,16 @@ export function LoginModal({ onLogin, onClose, onSwitchToRegister }) {
 }
 
 export function RegisterModal({ onSuccess, onClose, onSwitchToLogin }) {
-  const [role, setRole] = useState("student");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const INTERNAL_DOMAIN = "@eng.pdn.ac.lk";
+  const isInternalEmail = email.toLowerCase().endsWith(INTERNAL_DOMAIN);
+  const isExternalEmail = email.includes("@") && !isInternalEmail;
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") handleRegister();
@@ -182,6 +184,10 @@ export function RegisterModal({ onSuccess, onClose, onSwitchToLogin }) {
       setError("Please fill in all fields.");
       return;
     }
+    if (!email.toLowerCase().endsWith(INTERNAL_DOMAIN)) {
+      setError(`Only University of Peradeniya students can self-register. Your email must end with ${INTERNAL_DOMAIN}.`);
+      return;
+    }
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
@@ -190,16 +196,12 @@ export function RegisterModal({ onSuccess, onClose, onSwitchToLogin }) {
       setError("Password must be at least 6 characters long.");
       return;
     }
-    if (!email.includes("@")) {
-      setError("Please enter a valid email address.");
-      return;
-    }
 
     try {
       setIsLoading(true);
       setError("");
-      await registerUser({ name, email, password, role });
-      alert("Registration successful! Please log in with your credentials.");
+      await registerUser({ name, email, password });
+      alert("Registration successful! You can now sign in with your university email.");
       onSuccess();
       onSwitchToLogin?.();
     } catch (err) {
@@ -211,29 +213,38 @@ export function RegisterModal({ onSuccess, onClose, onSwitchToLogin }) {
   };
 
   return (
-    <Modal title="Create an account" subtitle="Staff and student access is provisioned through the portal." onClose={onClose} maxWidth={500}>
+    <Modal title="Create an account" subtitle="University of Peradeniya students can register instantly." onClose={onClose} maxWidth={500}>
       <div style={{ display: "grid", gap: "1rem" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 56, height: 56, borderRadius: 18, background: `${T.success}10`, color: T.success, margin: "0 auto" }}>
           <LuUserPlus size={24} />
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".55rem" }}>
-          {[["student", "Student"], ["staff", "Staff"]].map(([value, label]) => (
-            <button key={value} type="button" onClick={() => setRole(value)} className="btn" style={{ justifyContent: "center", borderRadius: 14, background: role === value ? T.navy : T.surfaceAlt, color: role === value ? T.white : T.textMid, borderColor: role === value ? T.navy : T.border }}>
-              {label}
-            </button>
-          ))}
-        </div>
+
+        {/* External user info box */}
+        {isExternalEmail && (
+          <div style={{ display: "flex", gap: ".6rem", alignItems: "flex-start", padding: ".9rem 1rem", borderRadius: 14, background: `${T.warning}12`, border: `1px solid ${T.warning}30`, color: T.warning, fontSize: ".84rem", lineHeight: 1.6 }}>
+            <LuCircleAlert size={16} style={{ marginTop: 2, flexShrink: 0 }} />
+            <span>
+              <strong>External user?</strong> Self-registration is only for <strong>@eng.pdn.ac.lk</strong> addresses.
+              Please email <a href="mailto:cvailab@pdn.ac.lk" style={{ color: T.warning, fontWeight: 700 }}>cvailab@pdn.ac.lk</a> and the lab admin will create your account.
+            </span>
+          </div>
+        )}
+
         {error && (
           <div style={{ display: "flex", gap: ".55rem", alignItems: "flex-start", padding: ".85rem .95rem", borderRadius: 14, background: `${T.danger}10`, color: T.danger, border: `1px solid ${T.danger}26`, fontSize: ".84rem" }}>
             <LuCircleAlert size={15} style={{ marginTop: 2, flexShrink: 0 }} />
             <span>{error}</span>
           </div>
         )}
+
         <Field label="Full name" type="text" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={handleKeyDown} icon={LuUserPlus} />
-        <Field label="University email" type="email" placeholder="id@pdn.ac.lk" value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={handleKeyDown} icon={LuLockKeyhole} />
+        <Field label="University email" type="email" placeholder="eXXXXX@eng.pdn.ac.lk" value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={handleKeyDown} icon={LuLockKeyhole} />
         <Field label="Password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={handleKeyDown} icon={LuLockKeyhole} />
         <Field label="Confirm password" type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} onKeyDown={handleKeyDown} icon={LuLockKeyhole} />
-        <Button variant="primary" fullWidth onClick={handleRegister} disabled={isLoading}>{isLoading ? "Creating account…" : "Create account"}</Button>
+
+        <Button variant="primary" fullWidth onClick={handleRegister} disabled={isLoading || isExternalEmail}>
+          {isLoading ? "Creating account…" : "Create account"}
+        </Button>
         <Button variant="ghost" fullWidth onClick={onClose}>Cancel</Button>
         <div style={{ textAlign: "center", color: T.textLight, fontSize: ".82rem", paddingTop: ".2rem" }}>
           Already have an account? <button type="button" onClick={onSwitchToLogin} style={{ border: 0, background: "none", padding: 0, color: T.navy, fontWeight: 700, textDecoration: "underline" }}>Sign in here</button>

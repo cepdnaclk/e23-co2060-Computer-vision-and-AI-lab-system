@@ -3,15 +3,25 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { sendRegistrationEmail } = require("../services/emailService");
 
-// REGISTER
+// REGISTER — open only to internal university students (@eng.pdn.ac.lk)
 const register = async (req, res) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { name, email, password } = req.body;
 
         // Validate input
         if (!name || !email || !password) {
             return res.status(400).json({ message: "All fields are required" });
         }
+
+        // Only internal university email addresses may self-register
+        if (!email.toLowerCase().endsWith("@eng.pdn.ac.lk")) {
+            return res.status(403).json({
+                message: "Self-registration is only available for University of Peradeniya students (@eng.pdn.ac.lk). External users must contact the lab admin to request access."
+            });
+        }
+
+        // Self-registration always creates a student account (never admin/officer)
+        const assignedRole = "student";
 
         // Check if user already exists
         const existing = await pool.query(
@@ -21,18 +31,17 @@ const register = async (req, res) => {
             return res.status(409).json({ message: "Email already registered" });
         }
 
-        // Hash the password — never store plain text
-        // 10 = "salt rounds", higher = more secure but slower
+        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Insert into DB
         const result = await pool.query(
             "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id, name, email, role",
-            [name, email, hashedPassword, role || "student"]
+            [name, email, hashedPassword, assignedRole]
         );
 
         // Send registration confirmation email (non-blocking)
-        sendRegistrationEmail(email, name, role || "student").catch(err => 
+        sendRegistrationEmail(email, name, assignedRole).catch(err =>
             console.error("Email sending failed (non-critical):", err.message)
         );
 

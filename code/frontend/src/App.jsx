@@ -28,18 +28,35 @@ import { OfficerPortal } from "./portal/OfficerPortal";
 import { StaffPortal }   from "./portal/StaffPortal";
 import { AdminPortal }   from "./portal/AdminPortal";
 
+// Valid roles the system recognises. Any other value (e.g. a stale remapped
+// "admin" written by old code when the user was really an "officer") will
+// force a fresh login so the correct portal is shown.
+const VALID_ROLES = ["student", "officer", "staff", "admin"];
+
+function getDefaultTab(role) {
+  if (role === "student") return "history";
+  if (role === "admin")   return "overview";
+  if (role === "officer") return "booking-requests";
+  return "dashboard";
+}
+
 function restoreSession() {
   try {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) return { role: null, tab: "overview" };
+
     const parsedUser = JSON.parse(storedUser);
     const role = parsedUser.role;
-    let tab;
-    if (role === "student") tab = "history";
-    else if (role === "admin") tab = "overview";
-    else if (role === "officer") tab = "booking-requests";
-    else tab = "dashboard";
-    return { role, tab };
+
+    // Guard: if the stored role is not one of our known roles, wipe the
+    // session so the user has to log in again with fresh data.
+    if (!VALID_ROLES.includes(role)) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      return { role: null, tab: "overview" };
+    }
+
+    return { role, tab: getDefaultTab(role) };
   } catch (error) {
     console.error("Failed to restore session", error);
     return { role: null, tab: "dashboard" };

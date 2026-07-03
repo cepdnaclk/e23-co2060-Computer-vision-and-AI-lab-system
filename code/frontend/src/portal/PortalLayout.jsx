@@ -25,7 +25,7 @@ function getLoggedInUser() {
 
 export function PortalSidebar({ role, active, setActive, onLogout }) {
   return (
-    <div className="portal-sidebar" style={{ width: 250, flexShrink: 0, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <div className="portal-sidebar" style={{ width: 250, flexShrink: 0, height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
       <div style={{ padding: "1rem 1.05rem", borderBottom: `1px solid rgba(255,255,255,.08)` }}>
         <div style={{ display: "flex", alignItems: "center", gap: ".8rem", marginBottom: ".8rem" }}>
           <div style={{ width: 42, height: 42, borderRadius: 999, background: "rgba(255,255,255,.96)", padding: 4, flexShrink: 0 }}>
@@ -41,7 +41,7 @@ export function PortalSidebar({ role, active, setActive, onLogout }) {
         </div>
       </div>
 
-      <nav style={{ padding: ".6rem 0", flex: 1 }}>
+      <nav style={{ padding: ".6rem 0", flex: 1, overflowY: "auto" }}>
         {(PORTAL_MENUS[role] || []).map((menu) => {
           const Icon = ICONS[menu.iconKey];
           return (

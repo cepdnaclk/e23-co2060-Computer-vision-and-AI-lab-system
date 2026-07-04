@@ -1,0 +1,78 @@
+Ref,#,Components,Use Case
+,,,
+01,01,High Performance Server,- Graphic and Computationally Efficient computing
+02,02,LiDAR mid 40 ,"- Indoor/ Outdoor 3D mapping
+- Obstacle detection for robotics / autonomous navigation
+- Terrain / elevation surveying"
+03,03,LiDAR mid 70,
+04,04,LiDAR MID 360 ,
+05,05,Turtlebot 3 Burger,"- Multi agent systems research (navigation , mapping SLAM)
+- modular parts hence sensors/actuators add remove as required
+- HCI gesture , voice for control research "
+06,06,Intel® RealSense™ Depth Camera D435i,"- Obstacle / Object detection for robotics 
+- Human gait detection / pose estimation 
+- 3D scene understanding "
+07,07,Thermal Imaging Camera,"- healthcare applications ( infectious screening , sports science, non contact temperature)
+- surveillance / search and rescue robotics for detection of humans/ movement
+- Wall Exterior insulation monitoring "
+08,08,DIY Projects/Ultrasound/Acoustic cameras,"Works in different materials (concrete, metals, biological tissues).
+High-Frequency & Low-Frequency Options – Higher frequencies for biomedical imaging, lower frequencies for deep penetration in civil structures."
+12,09,DJI RTK 300 Thermal,"- Aerial image capture for high accurate geospatial mapping 
+( for environment change detection)
+- Agriculture / water mapping and health monitoring"
+13,10,"Meta Quest 3 128GB
++ carrying case","- Training simulations -> surgeries / industrial tasks
+- HCI for commanding through gestures and video grounding
+- Digital Twin applications  (interactive virtual spaces) "
+14,11,NVIDIA Jetson Orin Nano Developer Kit,"- Edge computing applications (robotics. automation)
+- Real time application on low computation research "
+15,12,Canon XA60b Professional Camcorder,"- High Speed motion analysis (sports biomechanics)
+- Image / data collection "
+16,13,GoPro (HER12 Black with All in One Pack),"- High speed motion capture
+- Multi environment applications ( underwater/outdoor) recording"
+17,14,color calibrator,"- calibrate monitors for precision color
+- enables to calibrate multiple monitors at the same time "
+18,15,Camera calibration Chart,"- Camera calibration for 3D vision accuracy. 
+- Color correction for consistent image processing. 
+- Lens distortion measurement."
+19,16,Lens Cleaning Kit,"-  Optical maintenance for clarity and accuracy. 
+-  Preventing dust interference in image processing. 
+-  Preserving lens coatings for long-term use."
+20,17,Tripod Set,"- Stable positioning of cameras and sensors. 
+- Consistent image capture for machine vision. 
+- Long-exposure imaging."
+21,18,PROPHESEE EVALUATION KIT 3 - GENX320,"- Event Based Vision for compute efficient applications
+- Neuromorphic hardware interfacing to test real time SNN processing"
+22,19,CCTV,- camera setup for general lab security with  DVR
+23,20,GIGABYTE AORUS CO49DQ EK QD-OLED Curved Gaming Monitor,- For the server and VR headsets
+24,21,Husky AI Camera,"- Mountable AI Cameras for Robots
+- 7 preconfigured settings for obj / edge / face detection
+- For multi robot system tasks ( SLAM / Collaborative tasks) "
+25,22,3-side chroma keying setup,- Green screen for background
+26,23,Humidity Control Cabinet,"- Protect Items from Dust, Dirt, Humidity"
+27,24,85-inch Smart Board,- Smart screen for interactive discussions
+28,25,UPS,"- Can support server, workstations in case of power outage"
+29,26,Flooring Carpet," - Fire resistant, suitable for any kind of heavy circutary work. 495 per sqft * 860 sqft = 500000/="
+30,27,Fire Extinguishers 1,-Mandatory fire Extinguishers 
+31,28,RA Desk,- Research Assistant workstation to accommodate 8.
+32,29,Testing Station,"- Two testing station to support circuitry work, keeping equipment."
+33,30,Cabinet,- Cabinets to keep any type of equipment
+34,31,Bean Bags,- Bean bags to accommodate casual discussions.
+35,32,Office Chairs,- Chairs to support Research Assistant desks
+36,33,Curtain,-  Office blinds to obstruct lighting to capture crucial vision applications.
+37,34,Smart lock,- Smart lock with Fingerprint and combinations.
+38,35,Entrance name board,"- Name board ""Computer Vision and Artificial Intelligence lab, Sponsored by PEFAA""100 per sqft 5x2 square feet"
+39,36,Light tent,- Light tent
+40,37,Ring Light,- Portable lighting
+41,38,Flash,- For lighting with different contrasts
+42,39,Lighting Kit,- Lighting setup for special recordings.
+43,40,"Apple iMac 24"" 2021/ M1 chip 8 Core CPU/ 8 Core GPU",- Apple workstation (Already Avialable)
+44,41,Workstations,- Common PCs for general use
+45,42,AC Units (VRF ) - semi centralized,- Centralized AC system (Cassette type)
+46,43,Mic ,- Rode Wireless (2) + Mount Shotgun Microphone (1)
+47,44,White Board,
+48,45,Glass Sandblasting ,
+49,46,Sealing mounts for sensors and cameras,
+50,47,Sliding door,- Sliding door which will save area.
+51,48,Network Accessories+Access point,- Network configuration
+52,49,Electrical Work,- General electrical work and also for Special cameras on ceiling

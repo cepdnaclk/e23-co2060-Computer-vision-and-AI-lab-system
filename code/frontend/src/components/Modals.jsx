@@ -3,7 +3,7 @@ import { LuArrowRight, LuCalendarClock, LuCircleCheckBig, LuCircleAlert, LuLockK
 import { T } from "../styles/theme";
 import { Button, Field, Modal } from "./UI";
 import { EQUIPMENT } from "../data/labData";
-import { loginUser, registerUser, createBooking } from "../services/api";
+import { loginUser, initiateRegistration, verifyRegistration, createBooking } from "../services/api";
 
 export function BookingModal({ onClose }) {
   const [step, setStep] = useState(1);
@@ -164,10 +164,13 @@ export function LoginModal({ onLogin, onClose, onSwitchToRegister }) {
 }
 
 export function RegisterModal({ onSuccess, onClose, onSwitchToLogin }) {
+  const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -176,10 +179,13 @@ export function RegisterModal({ onSuccess, onClose, onSwitchToLogin }) {
   const isExternalEmail = email.includes("@") && !isInternalEmail;
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") handleRegister();
+    if (e.key === "Enter") {
+      if (step === 1) handleInitiate();
+      else handleVerify();
+    }
   };
 
-  const handleRegister = async () => {
+  const handleInitiate = async () => {
     if (!name || !email || !password || !confirmPassword) {
       setError("Please fill in all fields.");
       return;
@@ -200,13 +206,32 @@ export function RegisterModal({ onSuccess, onClose, onSwitchToLogin }) {
     try {
       setIsLoading(true);
       setError("");
-      await registerUser({ name, email, password });
+      await initiateRegistration({ name, email, password });
+      setStep(2);
+    } catch (err) {
+      console.error("Initiation failed:", err);
+      setError(err.response?.data?.message || "Failed to initiate registration. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerify = async () => {
+    if (!otp || otp.length !== 6) {
+      setError("Please enter the 6-digit code.");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError("");
+      await verifyRegistration({ email, otp });
       alert("Registration successful! You can now sign in with your university email.");
       onSuccess();
       onSwitchToLogin?.();
     } catch (err) {
-      console.error("Registration failed:", err);
-      setError(err.response?.data?.message || "Failed to create account. Please try again.");
+      console.error("Verification failed:", err);
+      setError(err.response?.data?.message || "Invalid or expired code. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -215,40 +240,79 @@ export function RegisterModal({ onSuccess, onClose, onSwitchToLogin }) {
   return (
     <Modal title="Create an account" subtitle="University of Peradeniya students can register instantly." onClose={onClose} maxWidth={500}>
       <div style={{ display: "grid", gap: "1rem" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 56, height: 56, borderRadius: 18, background: `${T.success}10`, color: T.success, margin: "0 auto" }}>
-          <LuUserPlus size={24} />
-        </div>
+        
+        {step === 1 ? (
+          <>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 56, height: 56, borderRadius: 18, background: `${T.success}10`, color: T.success, margin: "0 auto" }}>
+              <LuUserPlus size={24} />
+            </div>
 
-        {/* External user info box */}
-        {isExternalEmail && (
-          <div style={{ display: "flex", gap: ".6rem", alignItems: "flex-start", padding: ".9rem 1rem", borderRadius: 14, background: `${T.warning}12`, border: `1px solid ${T.warning}30`, color: T.warning, fontSize: ".84rem", lineHeight: 1.6 }}>
-            <LuCircleAlert size={16} style={{ marginTop: 2, flexShrink: 0 }} />
-            <span>
-              <strong>External user?</strong> Self-registration is only for <strong>@eng.pdn.ac.lk</strong> addresses.
-              Please email <a href="mailto:cvailab@pdn.ac.lk" style={{ color: T.warning, fontWeight: 700 }}>cvailab@pdn.ac.lk</a> and the lab admin will create your account.
-            </span>
-          </div>
+            {/* External user info box */}
+            {isExternalEmail && (
+              <div style={{ display: "flex", gap: ".6rem", alignItems: "flex-start", padding: ".9rem 1rem", borderRadius: 14, background: `${T.warning}12`, border: `1px solid ${T.warning}30`, color: T.warning, fontSize: ".84rem", lineHeight: 1.6 }}>
+                <LuCircleAlert size={16} style={{ marginTop: 2, flexShrink: 0 }} />
+                <span>
+                  <strong>External user?</strong> Self-registration is only for <strong>@eng.pdn.ac.lk</strong> addresses.
+                  Please email <a href="mailto:cvailab@pdn.ac.lk" style={{ color: T.warning, fontWeight: 700 }}>cvailab@pdn.ac.lk</a> and the lab admin will create your account.
+                </span>
+              </div>
+            )}
+
+            {error && (
+              <div style={{ display: "flex", gap: ".55rem", alignItems: "flex-start", padding: ".85rem .95rem", borderRadius: 14, background: `${T.danger}10`, color: T.danger, border: `1px solid ${T.danger}26`, fontSize: ".84rem" }}>
+                <LuCircleAlert size={15} style={{ marginTop: 2, flexShrink: 0 }} />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <Field label="Full name" type="text" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={handleKeyDown} icon={LuUserPlus} />
+            <Field label="University email" type="email" placeholder="eXXXXX@eng.pdn.ac.lk" value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={handleKeyDown} icon={LuLockKeyhole} />
+            <Field label="Password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={handleKeyDown} icon={LuLockKeyhole} />
+            <Field label="Confirm password" type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} onKeyDown={handleKeyDown} icon={LuLockKeyhole} />
+
+            <Button variant="primary" fullWidth onClick={handleInitiate} disabled={isLoading || isExternalEmail}>
+              {isLoading ? "Sending Code…" : "Send Verification Code"}
+            </Button>
+            <Button variant="ghost" fullWidth onClick={onClose}>Cancel</Button>
+            <div style={{ textAlign: "center", color: T.textLight, fontSize: ".82rem", paddingTop: ".2rem" }}>
+              Already have an account? <button type="button" onClick={onSwitchToLogin} style={{ border: 0, background: "none", padding: 0, color: T.navy, fontWeight: 700, textDecoration: "underline" }}>Sign in here</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 56, height: 56, borderRadius: 18, background: `${T.gold}18`, color: T.gold, margin: "0 auto" }}>
+              <LuLockKeyhole size={24} />
+            </div>
+            
+            <div style={{ textAlign: "center", color: T.textLight, fontSize: ".9rem", marginBottom: ".5rem" }}>
+              We've sent a 6-digit code to <strong>{email}</strong>.
+            </div>
+
+            {error && (
+              <div style={{ display: "flex", gap: ".55rem", alignItems: "flex-start", padding: ".85rem .95rem", borderRadius: 14, background: `${T.danger}10`, color: T.danger, border: `1px solid ${T.danger}26`, fontSize: ".84rem" }}>
+                <LuCircleAlert size={15} style={{ marginTop: 2, flexShrink: 0 }} />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <Field 
+              label="Verification Code" 
+              type="text" 
+              placeholder="123456" 
+              value={otp} 
+              onChange={(e) => setOtp(e.target.value)} 
+              onKeyDown={handleKeyDown} 
+              icon={LuLockKeyhole} 
+              maxLength={6}
+            />
+
+            <Button variant="primary" fullWidth onClick={handleVerify} disabled={isLoading || otp.length !== 6}>
+              {isLoading ? "Verifying…" : "Verify & Create Account"}
+            </Button>
+            <Button variant="ghost" fullWidth onClick={() => setStep(1)} disabled={isLoading}>Back</Button>
+          </>
         )}
 
-        {error && (
-          <div style={{ display: "flex", gap: ".55rem", alignItems: "flex-start", padding: ".85rem .95rem", borderRadius: 14, background: `${T.danger}10`, color: T.danger, border: `1px solid ${T.danger}26`, fontSize: ".84rem" }}>
-            <LuCircleAlert size={15} style={{ marginTop: 2, flexShrink: 0 }} />
-            <span>{error}</span>
-          </div>
-        )}
-
-        <Field label="Full name" type="text" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={handleKeyDown} icon={LuUserPlus} />
-        <Field label="University email" type="email" placeholder="eXXXXX@eng.pdn.ac.lk" value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={handleKeyDown} icon={LuLockKeyhole} />
-        <Field label="Password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={handleKeyDown} icon={LuLockKeyhole} />
-        <Field label="Confirm password" type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} onKeyDown={handleKeyDown} icon={LuLockKeyhole} />
-
-        <Button variant="primary" fullWidth onClick={handleRegister} disabled={isLoading || isExternalEmail}>
-          {isLoading ? "Creating account…" : "Create account"}
-        </Button>
-        <Button variant="ghost" fullWidth onClick={onClose}>Cancel</Button>
-        <div style={{ textAlign: "center", color: T.textLight, fontSize: ".82rem", paddingTop: ".2rem" }}>
-          Already have an account? <button type="button" onClick={onSwitchToLogin} style={{ border: 0, background: "none", padding: 0, color: T.navy, fontWeight: 700, textDecoration: "underline" }}>Sign in here</button>
-        </div>
       </div>
     </Modal>
   );

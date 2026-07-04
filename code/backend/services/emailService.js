@@ -197,9 +197,47 @@ const sendAdminNotificationEmail = async (adminEmail, message, data) => {
     }
 };
 
+// ── Send OTP Verification Email ──────────────────────
+const sendOtpEmail = async (email, otp) => {
+    try {
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: "Your Registration Code - CV & AI Laboratory",
+            html: `
+                <div style="font-family: Arial, sans-serif; color: #333; max-width: 500px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px;">
+                    <h2 style="color: #1a3a52; margin-top: 0;">Verify your email</h2>
+                    <p>You recently requested to create an account on the CV & AI Laboratory Portal.</p>
+                    <p>Enter the following 6-digit code to verify your identity and complete registration:</p>
+                    
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; text-align: center; margin: 24px 0; border: 1px solid #e2e8f0;">
+                        <span style="font-size: 32px; font-weight: bold; letter-spacing: 4px; color: #c4a747;">${otp}</span>
+                    </div>
+                    
+                    <p style="font-size: 14px; color: #64748b;">This code will expire in 10 minutes.</p>
+                    
+                    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
+                    <p style="color: #94a3b8; font-size: 12px; margin: 0;">
+                        If you did not request this code, you can safely ignore this email.<br>
+                        CV & AI Laboratory • University of Peradeniya
+                    </p>
+                </div>
+            `,
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log(`✓ OTP email sent to ${email}`);
+        return true;
+    } catch (error) {
+        console.error("Failed to send OTP email:", error);
+        return false;
+    }
+};
+
 module.exports = {
     sendRegistrationEmail,
     sendBookingConfirmationEmail,
     sendBookingStatusEmail,
     sendAdminNotificationEmail,
+    sendOtpEmail,
 };

@@ -10,7 +10,8 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
-export const registerUser = (data) => API.post("/api/auth/register", data);
+export const initiateRegistration = (data) => API.post("/api/auth/register/initiate", data);
+export const verifyRegistration = (data) => API.post("/api/auth/register/verify", data);
 export const loginUser = (data) => API.post("/api/auth/login", data);
 
 export const getItems = () => API.get("/api/items");

@@ -367,8 +367,9 @@ export const TICKER_ITEMS = [
 
 export const PORTAL_MENUS = {
   student: [
-    { id: "history", iconKey: "bookings", label: "My Bookings" },
+    { id: "equipment", iconKey: "equipment", label: "Equipments" },
     { id: "booking", iconKey: "booking", label: "Book Resource" },
+    { id: "history", iconKey: "bookings", label: "My Bookings" },
   ],
   officer: [
     { id: "booking-requests", iconKey: "booking-requests", label: "Booking Requests" },

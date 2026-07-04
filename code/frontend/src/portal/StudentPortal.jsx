@@ -127,7 +127,51 @@ function UsageHistory() {
   );
 }
 
+function EquipmentList() {
+  const [items, setItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const res = await getItems();
+        setItems(res.data || []);
+      } catch (err) {
+        console.error("Failed to fetch equipment:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchItems();
+  }, []);
+
+  return (
+    <div className="fade-up">
+      <h2 style={{ margin: 0, fontSize: "1.35rem", color: T.navyDark, marginBottom: ".35rem" }}>Equipments & Availability</h2>
+      <p style={{ color: T.textLight, fontSize: ".9rem", marginBottom: "1.2rem" }}>Browse available lab equipment and their intended use cases.</p>
+      
+      {isLoading ? (
+        <div style={{ color: T.textLight }}>Loading equipment list...</div>
+      ) : (
+        <PTable
+          cols={["ID", "Name", "Category", "Use Case", "Status"]}
+          rows={items.map((it) => [
+            it.id,
+            <strong key={`name-${it.id}`} style={{ color: T.navyDark }}>{it.name}</strong>,
+            <Badge key={`cat-${it.id}`} label={it.category} tone="Neutral" />,
+            <div key={`desc-${it.id}`} style={{ maxWidth: 350, whiteSpace: "normal", lineHeight: 1.4, fontSize: "0.85rem", color: T.textLight }}>
+              {it.description}
+            </div>,
+            <Badge key={`stat-${it.id}`} label={it.status === "available" ? "Available" : "In Use / Maint."} tone={it.status === "available" ? "Active" : "Neutral"} />
+          ])}
+        />
+      )}
+    </div>
+  );
+}
+
 export function StudentPortal({ active }) {
+  if (active === "equipment") return <EquipmentList />;
   if (active === "booking") return <BookingForm />;
   return <UsageHistory />;
 }

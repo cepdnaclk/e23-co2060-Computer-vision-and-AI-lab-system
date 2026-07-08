@@ -1,0 +1,37 @@
+gantt
+    title Computer Vision & AI Lab System Project Schedule
+    dateFormat  YYYY-MM-DD
+    axisFormat  %b %d
+
+    section Phase 1: Planning & Design
+    Requirements Elicitation          :active, req, 2026-03-01, 7d
+    System Architecture & Design      :arch, after req, 7d
+    Database ERD & Schema Design      :db_design, after req, 7d
+    
+    section Phase 2: Frontend Development
+    Figma Wireframing & Layouts       :ui_figma, after arch, 5d
+    React Setup & Routing             :react_setup, after ui_figma, 4d
+    Public Portfolio Pages            :public_pages, after react_setup, 10d
+    Internal Portal Layouts           :portal_pages, after public_pages, 10d
+
+    section Phase 3: Backend Development
+    Node.js Express Server Setup      :server_setup, after arch, 3d
+    PostgreSQL Database Configuration :db_config, after server_setup, 4d
+    Auth & Role Authorization API     :auth_api, after db_config, 7d
+    Inventory & Booking API Logic     :booking_api, after auth_api, 10d
+    Email Notification Integration    :email_service, after booking_api, 4d
+
+    section Phase 4: Integration
+    Frontend API Binding              :api_binding, after booking_api, 10d
+    Role Protection Guards            :role_guards, after api_binding, 5d
+    QR Access Pass Component          :qr_pass, after api_binding, 4d
+
+    section Phase 5: Testing & QA
+    Backend Unit & Endpoint Testing   :backend_test, after role_guards, 7d
+    UI Validation & RBAC Auditing     :ui_test, after backend_test, 5d
+    Bug Fixing & Performance Tweaks   :bug_fixing, after ui_test, 4d
+
+    section Phase 6: Deployment & Handover
+    Production Server Deployment      :deployment, after bug_fixing, 3d
+    Final Documentation & Appendices  :final_docs, after deployment, 4d
+    Final Showcase & Presentation     :final_presentation, after final_docs, 3d

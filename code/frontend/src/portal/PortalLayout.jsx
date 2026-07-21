@@ -73,7 +73,7 @@ export function PortalHeader() {
         <span style={{ color: T.navyDark, fontWeight: 700 }}>CV & AI Laboratory</span> · Internal management system
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: ".7rem" }}>
-        <div style={{ textAlign: "right" }}>
+        <div className="portal-header-userinfo" style={{ textAlign: "right" }}>
           <div style={{ color: T.text, fontWeight: 600, fontSize: ".9rem" }}>{displayName}</div>
           <div style={{ color: T.textLight, fontSize: ".75rem" }}>Authenticated session</div>
         </div>

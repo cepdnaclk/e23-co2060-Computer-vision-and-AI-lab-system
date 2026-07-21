@@ -396,10 +396,44 @@ export const GLOBAL_CSS = `
 
   @media (max-width: 960px) {
     .portal-container { flex-direction: column !important; }
-    .portal-sidebar { width: 100% !important; min-height: auto !important; }
-    .portal-sidebar nav { display: flex; overflow-x: auto; }
-    .sb-btn { border-left: 0; border-bottom: 3px solid transparent; white-space: nowrap; }
-    .sb-btn.active { border-bottom-color: var(--gold); }
+
+    /* Sidebar becomes a slim horizontal top bar */
+    .portal-sidebar {
+      width: 100% !important;
+      height: auto !important;
+      min-height: auto !important;
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 50 !important;
+      flex-direction: row !important;
+      align-items: center !important;
+    }
+
+    /* Hide the logo/branding block and logout button on small screens */
+    .portal-sidebar > div:first-child,
+    .portal-sidebar > div:last-child { display: none !important; }
+
+    /* Nav becomes a horizontal scrollable strip */
+    .portal-sidebar nav {
+      display: flex !important;
+      overflow-x: auto !important;
+      padding: 0 !important;
+      flex: 1;
+      -webkit-overflow-scrolling: touch;
+    }
+    .portal-sidebar nav::-webkit-scrollbar { display: none; }
+
+    .sb-btn {
+      border-left: 0 !important;
+      border-bottom: 3px solid transparent !important;
+      white-space: nowrap !important;
+      padding: .75rem 1rem !important;
+      flex-shrink: 0;
+    }
+    .sb-btn.active {
+      border-bottom-color: var(--gold) !important;
+      border-left-color: transparent !important;
+    }
   }
 
   @media (max-width: 768px) {
@@ -407,6 +441,12 @@ export const GLOBAL_CSS = `
     .nav-btn { padding: .8rem .75rem; }
     .hero-panel { border-radius: 20px; }
     .modal-shell { border-radius: 20px; }
-    .dtable { min-width: 720px; }
+    .dtable { min-width: 560px; }
+
+    /* Reduce main padding on small screens */
+    .portal-main-content { padding: 1rem !important; }
+
+    /* Collapse user info in portal header — keep only avatar */
+    .portal-header-userinfo { display: none !important; }
   }
 `;

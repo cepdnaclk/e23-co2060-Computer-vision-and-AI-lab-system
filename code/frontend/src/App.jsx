@@ -131,7 +131,7 @@ export default function App() {
 
         <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: "100vh" }}>
           <PortalHeader role={userRole} />
-          <main style={{ flex: 1, padding: "2rem", overflowY: "auto" }}>
+          <main className="portal-main-content" style={{ flex: 1, padding: "2rem", overflowY: "auto" }}>
             <PortalContent
               role={userRole}
               active={portalTab}

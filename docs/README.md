@@ -2,72 +2,255 @@
 layout: home
 permalink: index.html
 
-repository-name: e23-co2060-project-Computer-vision-and-AI-lab-system
-title: CO2060
+repository-name: e23-co2060-Computer-vision-and-AI-lab-system
+title: Computer Vision & AI Lab System
 ---
 
-[comment]: # "This is the standard layout for the project, but you can clean this and use your own template, and add more information required for your own project"
+# Computer Vision & AI Lab System
 
-<!-- Once you fill the index.json file inside /docs/data, please make sure the syntax is correct. (You can use this tool to identify syntax errors)
-
-Please include the "correct" email address of your supervisors. (You can find them from https://people.ce.pdn.ac.lk/ )
-
-Please include an appropriate cover page image ( cover_page.jpg ) and a thumbnail image ( thumbnail.jpg ) in the same folder as the index.json (i.e., /docs/data ). The cover page image must be cropped to 940×352 and the thumbnail image must be cropped to 640×360 . Use https://croppola.com/ for cropping and https://squoosh.app/ to reduce the file size.
-
-If your followed all the given instructions correctly, your repository will be automatically added to the department's project web site (Update daily)
-
-A HTML template integrated with the given GitHub repository templates, based on github.com/cepdnaclk/eYY-project-theme . If you like to remove this default theme and make your own web page, you can remove the file, docs/_config.yml and create the site using HTML. -->
-
-# Project Title
-Computer vision & AI lab system
 ---
 
 ## Team
--  E/23/282, M.R.A Rahman, e23282@eng.pdn.ac.lk(mailto:name@email.com)
--  E/23/273, A Piraveen, e23273@eng.pdn.ac.lk(mailto:name@email.com)
--  E/23/289, A Rajeeth, e23289@eng.pdn.ac.lk(mailto:name@email.com)
--  E/23/396, M Tharsika, e23396@eng.pdn.ac.lk(mailto:name@email.com)
 
-<!-- Image (photo/drawing of the final hardware) should be here -->
+- E/23/282, M.R.A Rahman, [e23282@eng.pdn.ac.lk](mailto:e23282@eng.pdn.ac.lk)
+- E/23/273, A Piraveen, [e23273@eng.pdn.ac.lk](mailto:e23273@eng.pdn.ac.lk)
+- E/23/289, A Rajeeth, [e23289@eng.pdn.ac.lk](mailto:e23289@eng.pdn.ac.lk)
+- E/23/396, M Tharsika, [e23396@eng.pdn.ac.lk](mailto:e23396@eng.pdn.ac.lk)
 
-<!-- This is a sample image, to show how to add images to your page. To learn more options, please refer [this](https://projects.ce.pdn.ac.lk/docs/faq/how-to-add-an-image/) -->
-
-<!-- ![Sample Image](./images/sample.png) -->
+---
 
 #### Table of Contents
 1. [Introduction](#introduction)
-2. [Solution Architecture](#solution-architecture )
-3. [Software Designs](#hardware-and-software-designs)
+2. [Solution Architecture](#solution-architecture)
+3. [Software Designs](#software-designs)
 4. [Testing](#testing)
 5. [Conclusion](#conclusion)
 6. [Links](#links)
 
+---
+
 ## Introduction
 
-This project implements a comprehensive web platform for the Computer Vision and AI Lab, designed to streamline both public outreach and internal operations. The public interface acts as a dynamic portfolio, showcasing the lab's latest research, publications, and team achievements to the academic community.
+This project implements a comprehensive web platform for the **Computer Vision and AI Lab** at the University of Peradeniya, designed to streamline both public outreach and internal operations.
 
-Internally, the system features a secure management dashboard to digitize daily workflows. Key modules include an inventory booking engine for high-value equipment (such as drones and cameras) and a scheduling system for shared GPU computing resources. By replacing manual logbooks with role-based automation, this platform ensures efficient resource utilization and seamless collaboration between students and administration.
+The system serves two distinct purposes:
+
+1. **External Visibility:** A dynamic public portal showcasing the lab's latest research, publications, and team achievements to the academic community and industry collaborators.
+2. **Internal Operations:** A secure, role-based management dashboard that digitizes daily workflows — replacing manual logbooks with automated systems for equipment tracking and GPU resource allocation.
+
+### Key Features
+
+**Public Portal**
+- Home page with lab highlights and announcements
+- Research showcase of ongoing and completed projects
+- Publications listing of research papers and journals
+- People profiles of staff, researchers, and student members
+- Facilities overview with equipment booking access
+- News & Events for workshop announcements and lab updates
+- Services page for consultation and collaborative offerings
+- Contact form and lab location information
+
+**Internal Management Portal**
+- **Student Portal** — View booking history, request equipment, book consultations
+- **Officer Portal** — Review and approve/reject student booking requests
+- **Staff Portal** — Manage personal profile and lab-related resources
+- **Admin Portal** — Full system control: users, inventory, analytics, news
+
+**Core System Capabilities**
+- Resource Booking Engine for high-value assets (Drones, Cameras, Sensors)
+- GPU Scheduling for shared computing resources (e.g., NVIDIA A100/H100 clusters)
+- Role-Based Access Control (RBAC) with four roles: `student`, `officer`, `staff`, `admin`
+- JWT-based authentication with Google OAuth integration
+- Email OTP verification for secure account creation via Nodemailer
+- Analytics Dashboard for usage and booking metrics
+
+---
 
 ## Solution Architecture
 
-High level diagram + description
+The system follows a decoupled **three-tier client-server architecture**:
+
+```
+┌────────────────────────────────────────────────────────────┐
+│                    FRONTEND  (React + Vite)                │
+│                                                            │
+│  ┌──────────────────┐        ┌──────────────────────────┐  │
+│  │   Public Portal  │        │    Internal Portals      │  │
+│  │ Home / Research  │        │  Student / Officer /     │  │
+│  │ People / News …  │        │  Staff / Admin           │  │
+│  └────────┬─────────┘        └───────────┬──────────────┘  │
+└───────────┼──────────────────────────────┼─────────────────┘
+            │         REST API (Axios)      │
+            ▼                              ▼
+┌──────────────────────────────────────────────────────────┐
+│                BACKEND  (Node.js + Express)              │
+│                                                          │
+│  /api/auth    /api/items    /api/bookings                │
+│  /api/users   /api/people   /api/news    /api/analytics  │
+│                                                          │
+│  ┌──────────────┐  ┌──────────────┐  ┌────────────────┐  │
+│  │  JWT + OAuth │  │  Nodemailer  │  │  File Uploads  │  │
+│  └──────────────┘  └──────────────┘  └────────────────┘  │
+└────────────────────────────┬─────────────────────────────┘
+                             │
+                             ▼
+┌──────────────────────────────────────────────────────────┐
+│              DATABASE  (PostgreSQL via Neon)              │
+│     Users · Inventory · Bookings · News · People         │
+└──────────────────────────────────────────────────────────┘
+```
+
+**Deployment Architecture**
+
+| Layer | Platform | Purpose |
+|:---|:---|:---|
+| Database | Neon | Serverless PostgreSQL — always-on, auto-scaling |
+| Backend | Northflank | Node.js API server containerized deployment |
+| Frontend | Vercel | React + Vite static site with global CDN |
+
+---
 
 ## Software Designs
 
-Detailed designs with many sub-sections
+### Technology Stack
+
+| Component | Technology | Purpose |
+|:---|:---|:---|
+| Frontend | React 19 + Vite | Interactive SPA for all portals and public pages |
+| Routing | React Router DOM v7 | Client-side navigation between sections |
+| Backend | Node.js + Express v5 | REST API server, authentication, business logic |
+| Database | PostgreSQL (via `pg`) | Relational storage for users, bookings, inventory |
+| Auth | JWT + Google OAuth | Secure session management and single sign-on |
+| Email | Nodemailer | OTP delivery and notification emails |
+| Styling | Vanilla CSS + CSS Variables | Theming and component-level styles |
+| HTTP Client | Axios | Frontend-to-backend API communication |
+| File Handling | XLSX | Spreadsheet export for data and reports |
+
+### Project Structure
+
+```
+e23-co2060-Computer-vision-and-AI-lab-system/
+├── code/
+│   ├── backend/
+│   │   ├── config/           # Database connection (pg pool)
+│   │   ├── controllers/      # Route handler logic
+│   │   ├── middleware/       # JWT authentication middleware
+│   │   ├── routes/           # Express route definitions
+│   │   │   ├── authRoutes.js
+│   │   │   ├── bookingRoutes.js
+│   │   │   ├── inventoryRoutes.js
+│   │   │   ├── usersRoutes.js
+│   │   │   ├── peopleRoutes.js
+│   │   │   ├── newsRoutes.js
+│   │   │   └── analyticsRoutes.js
+│   │   ├── services/         # Business logic & email service
+│   │   ├── sql/              # SQL schema files
+│   │   └── index.js          # Express app entry point (port 5000)
+│   │
+│   └── frontend/
+│       ├── src/
+│       │   ├── components/   # Shared UI components (Layout, Modals)
+│       │   ├── pages/        # Public portal pages
+│       │   ├── portal/       # Role-based internal portal views
+│       │   │   ├── AdminPortal.jsx
+│       │   │   ├── OfficerPortal.jsx
+│       │   │   ├── StaffPortal.jsx
+│       │   │   └── StudentPortal.jsx
+│       │   ├── services/     # Axios API service wrappers
+│       │   ├── styles/       # CSS theme & global styles
+│       │   └── App.jsx       # Root component & router
+│       └── index.html
+│
+└── docs/                     # Department project documentation site
+```
+
+### API Endpoints
+
+| Method | Endpoint | Description |
+|:---|:---|:---|
+| `POST` | `/api/auth/login` | User login — returns JWT token |
+| `POST` | `/api/auth/register` | New user registration with OTP |
+| `GET` | `/api/items` | List all inventory/equipment items |
+| `POST` | `/api/items` | Add new inventory item (admin only) |
+| `GET` | `/api/bookings` | View bookings (filtered by role) |
+| `POST` | `/api/bookings` | Create a new booking request |
+| `GET` | `/api/users` | User management (admin only) |
+| `GET` | `/api/people` | Retrieve lab people/profiles |
+| `POST` | `/api/people` | Add/update a person profile |
+| `GET` | `/api/news` | Retrieve news and events |
+| `POST` | `/api/news` | Publish a news item (admin only) |
+| `GET` | `/api/analytics` | Usage and booking analytics (admin only) |
+
+### User Roles & Access Control
+
+| Role | Access Level |
+|:---|:---|
+| **Student** | Book equipment, view booking history, request consultations |
+| **Officer** | Review and approve/reject student booking requests |
+| **Staff** | Manage personal profile and lab-related tasks |
+| **Admin** | Full access — user management, inventory, analytics, news |
+
+---
 
 ## Testing
 
-Testing done on software : detailed + summarized results
+### Backend API Testing
+
+The backend REST API was tested using manual HTTP requests via `test_api.js` to verify all core endpoints, including:
+
+- **Authentication:** Login, registration, OTP verification, Google OAuth sign-in
+- **Booking Engine:** Creating booking requests, officer approval/rejection flows, conflict checking
+- **Inventory Management:** CRUD operations for equipment and inventory items
+- **User Management:** Admin-level user listing, role updates, and profile management
+- **Email Notifications:** OTP delivery and booking status notification emails via Nodemailer
+
+### Frontend Testing
+
+- Role-based routing was tested for all four user types (Student, Officer, Staff, Admin)
+- Protected routes verified to redirect unauthenticated users to the login page
+- Booking forms validated for date conflicts and availability checks
+- Google OAuth login flow tested end-to-end with the configured Client ID
+- Responsive layouts tested across desktop and mobile viewports
+
+### Database Testing
+
+- Schema correctness verified by running `runSchema.js` against the Neon PostgreSQL instance
+- Seed scripts (`seedUsers.js`, `seedInventory.js`, `seedEquipment.js`) tested to populate initial data without conflicts
+- SSL connection to Neon verified with `sslmode=require` and `channel_binding=require`
+
+---
 
 ## Conclusion
 
-What was achieved, future developments, commercialization plans
+### What Was Achieved
+
+This project successfully delivers a dual-purpose web platform for the Computer Vision and AI Lab:
+
+- A fully functional **public portal** with research, publications, people, news, and contact sections
+- A secure **internal management system** with role-based access for students, officers, staff, and administrators
+- A working **equipment booking engine** that handles requests, approvals, and notifications end-to-end
+- **JWT authentication** with Google OAuth integration for seamless and secure login
+- **Cloud deployment** across Neon (database), Northflank (backend), and Vercel (frontend)
+
+### Future Developments
+
+- Real-time booking availability calendar with visual time-slot selection
+- GPU cluster job queue management with estimated wait times
+- Mobile application for on-the-go equipment requests
+- Integration with the university's central student identity system (LDAP/SSO)
+- Automated reporting and analytics export to PDF/Excel for lab administrators
+- Notification system via WhatsApp or SMS in addition to email
+
+### Commercialization Potential
+
+The platform's architecture is generic enough to be adapted for any university lab or shared-resource facility. With minor customization, it can serve other departments within the Faculty of Engineering or be packaged as a multi-tenant SaaS product for research institutions.
+
+---
 
 ## Links
 
 - [Project Repository](https://github.com/cepdnaclk/e23-co2060-Computer-vision-and-AI-lab-system.git)
-- [Project Page]
+- [Project Page](https://cepdnaclk.github.io/e23-co2060-Computer-vision-and-AI-lab-system/)
 - [Department of Computer Engineering](http://www.ce.pdn.ac.lk/)
 - [University of Peradeniya](https://eng.pdn.ac.lk/)
 

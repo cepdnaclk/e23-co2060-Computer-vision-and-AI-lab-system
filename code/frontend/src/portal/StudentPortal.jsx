@@ -115,7 +115,7 @@ function BookingForm() {
           error={dateError}
           helperText="Monday – Friday only. Weekends are unavailable."
         />
-        <Field label="Time slot" value={form.time} onChange={set("time")} options={["08:00–10:00", "10:00–12:00", "13:00–15:00", "15:00–17:00", "17:00–19:00"]} icon={LuClock3} />
+        <Field label="Time slot" value={form.time} onChange={set("time")} options={["08:00–10:00", "10:00–12:00", "13:00–15:00", "15:00–17:00"]} icon={LuClock3} />
         <Field label="Purpose / notes" rows={3} value={form.purpose} onChange={set("purpose")} placeholder="Describe your intended use..." />
         <Button variant="primary" icon={LuUpload} fullWidth onClick={handleSubmit} disabled={isSubmitting || !!dateError}>{isSubmitting ? "Submitting…" : "Submit request"}</Button>
       </Card>

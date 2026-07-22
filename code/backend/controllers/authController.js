@@ -1,7 +1,7 @@
 const pool = require("../config/db");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { sendRegistrationEmail, sendOtpEmail } = require("../services/emailService");
+const { sendRegistrationEmail, sendOtpEmail, sendPasswordResetOtpEmail } = require("../services/emailService");
 const { OAuth2Client } = require("google-auth-library");
 
 // INITIATE REGISTRATION (Step 1) — generates and sends OTP
@@ -216,4 +216,94 @@ const googleLogin = async (req, res) => {
     }
 };
 
-module.exports = { initiateRegistration, verifyRegistration, login, googleLogin };
+// FORGOT PASSWORD — STEP 1: generate and send OTP to the user's email
+const forgotPasswordInitiate = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ message: "Email is required" });
+        }
+
+        // Check if a user with this email actually exists
+        const existing = await pool.query("SELECT id FROM users WHERE email = $1", [email]);
+        if (existing.rows.length === 0) {
+            // Same generic message whether or not the account exists, so we
+            // don't leak which emails are registered.
+            return res.status(200).json({ message: "If an account exists for this email, a verification code has been sent." });
+        }
+
+        // Generate 6-digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // Expires in 10 minutes
+        const expiresAt = new Date(Date.now() + 10 * 60000);
+
+        // Upsert into password_reset_otp table
+        await pool.query(
+            `INSERT INTO password_reset_otp (email, otp, expires_at)
+             VALUES ($1, $2, $3)
+             ON CONFLICT (email) DO UPDATE SET otp = EXCLUDED.otp, expires_at = EXCLUDED.expires_at`,
+            [email, otp, expiresAt]
+        );
+
+        // Send OTP email
+        const emailSent = await sendPasswordResetOtpEmail(email, otp);
+        if (!emailSent) {
+            return res.status(500).json({ message: "Failed to send verification email. Please try again." });
+        }
+
+        res.status(200).json({ message: "If an account exists for this email, a verification code has been sent." });
+    } catch (error) {
+        console.error("Forgot Password Initiate Error:", error);
+        res.status(500).json({ message: "Failed to initiate password reset" });
+    }
+};
+
+// FORGOT PASSWORD — STEP 2: verify OTP and set the new password
+const resetPassword = async (req, res) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+
+        if (!email || !otp || !newPassword) {
+            return res.status(400).json({ message: "Email, code, and new password are required" });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: "Password must be at least 6 characters long" });
+        }
+
+        // Fetch OTP record
+        const record = await pool.query("SELECT * FROM password_reset_otp WHERE email = $1", [email]);
+        if (record.rows.length === 0) {
+            return res.status(400).json({ message: "Verification session not found or expired. Please request a new code." });
+        }
+
+        const otpData = record.rows[0];
+
+        // Check expiration
+        if (new Date() > new Date(otpData.expires_at)) {
+            await pool.query("DELETE FROM password_reset_otp WHERE email = $1", [email]);
+            return res.status(400).json({ message: "Verification code has expired. Please request a new code." });
+        }
+
+        // Check OTP match
+        if (otpData.otp !== otp) {
+            return res.status(400).json({ message: "Invalid verification code" });
+        }
+
+        // OTP is valid, hash and update the password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await pool.query("UPDATE users SET password = $1 WHERE email = $2", [hashedPassword, email]);
+
+        // Delete the OTP record so it can't be reused
+        await pool.query("DELETE FROM password_reset_otp WHERE email = $1", [email]);
+
+        res.status(200).json({ message: "Password has been reset successfully. You can now sign in with your new password." });
+    } catch (error) {
+        console.error("Reset Password Error:", error);
+        res.status(500).json({ message: "Failed to reset password" });
+    }
+};
+
+module.exports = { initiateRegistration, verifyRegistration, login, googleLogin, forgotPasswordInitiate, resetPassword };

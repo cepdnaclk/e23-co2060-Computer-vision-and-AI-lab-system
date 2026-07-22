@@ -62,6 +62,13 @@ CREATE TABLE reservations (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 6. Password Reset OTP Table
+CREATE TABLE password_reset_otp (
+    email VARCHAR(200) PRIMARY KEY,
+    otp VARCHAR(6) NOT NULL,
+    expires_at TIMESTAMP NOT NULL
+);
+
 -- Seed public demo content
 INSERT INTO people (name, title, dept, research, type, sort_order) VALUES
 ('Dr. Anika Reyes', 'Lab Director / Professor', 'Computer Science', '3D Vision & UAVs', 'staff', 1),

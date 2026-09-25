@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS news;
 DROP TABLE IF EXISTS projects;
 DROP TABLE IF EXISTS people;
 DROP TABLE IF EXISTS reservations;
+DROP TABLE IF EXISTS equipment_issue_reports;
 DROP TABLE IF EXISTS inventory;
 DROP TABLE IF EXISTS otp_verifications;
 DROP TABLE IF EXISTS password_reset_otp;
@@ -68,7 +69,21 @@ CREATE TABLE reservations (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 6. Password Reset OTP Table
+-- 6. Equipment damage, loss, and fault reports
+CREATE TABLE equipment_issue_reports (
+    id SERIAL PRIMARY KEY,
+    inventory_id INTEGER NOT NULL REFERENCES inventory(id),
+    reported_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    issue_type VARCHAR(30) NOT NULL,
+    description TEXT NOT NULL,
+    urgency VARCHAR(20) NOT NULL DEFAULT 'Normal',
+    status VARCHAR(20) NOT NULL DEFAULT 'Open',
+    admin_notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 7. Password Reset OTP Table
 CREATE TABLE password_reset_otp (
     email VARCHAR(200) PRIMARY KEY,
     otp VARCHAR(6) NOT NULL,

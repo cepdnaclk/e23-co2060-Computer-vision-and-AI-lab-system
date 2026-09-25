@@ -28,6 +28,7 @@ import {
   LuBadgeInfo,
   LuCalendarDays,
   LuBookMarked,
+  LuTriangleAlert,
 } from "react-icons/lu";
 
 export const ICONS = {
@@ -72,6 +73,7 @@ export const ICONS = {
   calendar: LuCalendarDays,
   labAccess: LuBookMarked,
   bookings: LuBookMarked,
+  issues: LuTriangleAlert,
 };
 
 export const RESEARCH_AREAS = [
@@ -368,6 +370,7 @@ export const TICKER_ITEMS = [
 export const PORTAL_MENUS = {
   student: [
     { id: "equipment", iconKey: "equipment", label: "Equipments" },
+    { id: "issues", iconKey: "issues", label: "My Issue Reports" },
     { id: "booking", iconKey: "booking", label: "Book Resource" },
     { id: "history", iconKey: "bookings", label: "My Bookings" },
     { id: "announcements", iconKey: "news", label: "Announcements" },
@@ -376,6 +379,7 @@ export const PORTAL_MENUS = {
     { id: "overview", iconKey: "overview", label: "Overview" },
     { id: "booking-requests", iconKey: "booking-requests", label: "Booking Requests" },
     { id: "equipment", iconKey: "equipment", label: "Equipment" },
+    { id: "issues", iconKey: "issues", label: "Issue Reports" },
   ],
   staff: [
     { id: "dashboard", iconKey: "overview", label: "My Bookings" },
@@ -388,6 +392,7 @@ export const PORTAL_MENUS = {
     { id: "overview", iconKey: "overview", label: "Overview" },
     { id: "reservations", iconKey: "reservations", label: "Reservations" },
     { id: "equipment", iconKey: "equipment", label: "Equipment" },
+    { id: "issues", iconKey: "issues", label: "Issue Reports" },
     { id: "users", iconKey: "usersMgmt", label: "Users" },
     { id: "people", iconKey: "peopleMgmt", label: "Staff & People" },
     { id: "news", iconKey: "newsMgmt", label: "News" },

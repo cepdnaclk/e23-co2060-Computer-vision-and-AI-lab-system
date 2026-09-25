@@ -1,4 +1,5 @@
 import { Statistics } from "./Statistics";
+import { IssueReportsSection } from "./IssueReportsSection";
 import { useEffect, useState } from "react";
 import {
   LuCheck, LuPencil, LuPlus, LuRefreshCcw, LuTrash2,
@@ -402,5 +403,6 @@ function EquipmentSection() {
 export function OfficerPortal({ active }) {
   if (active === "overview") return <Statistics />;
   if (active === "equipment") return <EquipmentSection />;
+  if (active === "issues") return <IssueReportsSection />;
   return <BookingRequestsSection />;  // default to booking-requests
 }

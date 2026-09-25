@@ -1,4 +1,5 @@
 import { Statistics } from "./Statistics";
+import { IssueReportsSection } from "./IssueReportsSection";
 import { useEffect, useState } from "react";
 import { LuCalendarClock, LuCheck, LuFileText, LuPencil, LuPlus, LuRefreshCcw, LuTrash2, LuUsers, LuWrench, LuX, LuLayers3, LuCalendarDays } from "react-icons/lu";
 import { T } from "../styles/theme";
@@ -1112,6 +1113,7 @@ export function AdminPortal({ active }) {
   if (active === "overview") return <OverviewSection />;
   if (active === "reservations") return <ReservationsSection />;
   if (active === "equipment") return <EquipmentSection />;
+  if (active === "issues") return <IssueReportsSection />;
   if (active === "users") return <UsersSection />;
   if (active === "people") return <PeopleSection />;
   if (active === "news") return <NewsSection />;

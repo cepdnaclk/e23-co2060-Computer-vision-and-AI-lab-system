@@ -38,6 +38,7 @@ const newsRoutes = require("./routes/newsRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
 const projectsRoutes = require("./routes/projectsRoutes");
 const contactRoutes = require("./routes/contactRoutes");
+const issueRoutes = require("./routes/issueRoutes");
 
 // Use routes
 app.use("/api/items", inventoryRoutes);
@@ -49,6 +50,7 @@ app.use("/api/news", newsRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/projects", projectsRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/issues", issueRoutes);
 
 // Ensure required tables exist on every server start
 const ensureTables = async () => {
@@ -65,6 +67,20 @@ const ensureTables = async () => {
             email VARCHAR(200) PRIMARY KEY,
             otp VARCHAR(6) NOT NULL,
             expires_at TIMESTAMP NOT NULL
+        );
+    `);
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS equipment_issue_reports (
+            id SERIAL PRIMARY KEY,
+            inventory_id INTEGER NOT NULL REFERENCES inventory(id),
+            reported_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            issue_type VARCHAR(30) NOT NULL,
+            description TEXT NOT NULL,
+            urgency VARCHAR(20) NOT NULL DEFAULT 'Normal',
+            status VARCHAR(20) NOT NULL DEFAULT 'Open',
+            admin_notes TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     `);
     console.log("Database tables verified.");

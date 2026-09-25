@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { LuCamera, LuClock3, LuQrCode, LuUpload, LuDownload, LuFileText } from "react-icons/lu";
+import { LuCamera, LuClock3, LuQrCode, LuUpload, LuDownload, LuFileText, LuTriangleAlert } from "react-icons/lu";
 import { T } from "../styles/theme";
 import { Badge, Button, Card, Field, PTable } from "../components/UI";
-import { getItems, createBooking, getMyBookings, getNews, getUnavailableSlots } from "../services/api";
+import { getItems, createBooking, getMyBookings, getNews, getUnavailableSlots, createIssueReport, getIssueReports } from "../services/api";
 import { bookingsToCSV, bookingQRUrl } from "../utils/bookingExport";
 
 function QRPassModal({ booking, onClose }) {
@@ -237,6 +237,7 @@ function UsageHistory() {
 function EquipmentList() {
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [reportingItem, setReportingItem] = useState(null);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -261,7 +262,7 @@ function EquipmentList() {
         <div style={{ color: T.textLight }}>Loading equipment list...</div>
       ) : (
         <PTable
-          cols={["ID", "Name", "Category", "Use Case", "Status"]}
+          cols={["ID", "Name", "Category", "Use Case", "Status", "Action"]}
           rows={items.map((it) => [
             it.id,
             <strong key={`name-${it.id}`} style={{ color: T.navyDark }}>{it.name}</strong>,
@@ -269,11 +270,59 @@ function EquipmentList() {
             <div key={`desc-${it.id}`} style={{ maxWidth: 350, whiteSpace: "normal", lineHeight: 1.4, fontSize: "0.85rem", color: T.textLight }}>
               {it.description}
             </div>,
-            <Badge key={`stat-${it.id}`} label={it.status === "available" ? "Available" : "In Use / Maint."} tone={it.status === "available" ? "Active" : "Neutral"} />
+            <Badge key={`stat-${it.id}`} label={it.status === "available" ? "Available" : "In Use / Maint."} tone={it.status === "available" ? "Active" : "Neutral"} />,
+            <Button key={`report-${it.id}`} variant="outline" size="sm" icon={LuTriangleAlert} onClick={() => setReportingItem(it)}>Report an issue</Button>
           ])}
         />
       )}
+      <IssueReportModal equipment={reportingItem} onClose={() => setReportingItem(null)} />
     </div>
+  );
+}
+
+function IssueReportModal({ equipment, onClose }) {
+  const [form, setForm] = useState({ issueType: "Hardware fault", urgency: "Normal", description: "" });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (equipment) {
+      setForm({ issueType: "Hardware fault", urgency: "Normal", description: "" });
+      setError("");
+    }
+  }, [equipment]);
+
+  if (!equipment) return null;
+  const set = (key) => (e) => setForm((value) => ({ ...value, [key]: e.target.value }));
+  const submit = async () => {
+    if (!form.description.trim()) {
+      setError("Please describe the damage, loss, or hardware fault.");
+      return;
+    }
+    setSaving(true);
+    setError("");
+    try {
+      await createIssueReport({ equipmentId: equipment.id, ...form });
+      alert("Issue report submitted. Lab staff will review it shortly.");
+      onClose();
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to submit issue report.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Modal title="Report an issue" subtitle={`This report will be attached to ${equipment.name}.`} onClose={onClose} maxWidth={520}>
+      {error && <div role="alert" style={{ marginBottom: "1rem", padding: ".85rem .95rem", borderRadius: 14, background: `${T.danger}10`, border: `1px solid ${T.danger}26`, color: T.danger, fontSize: ".84rem" }}>{error}</div>}
+      <Field label="Issue type" value={form.issueType} onChange={set("issueType")} options={["Damage", "Hardware fault", "Loss"]} />
+      <Field label="Urgency" value={form.urgency} onChange={set("urgency")} options={["Low", "Normal", "Urgent"]} />
+      <Field label="What happened?" rows={4} value={form.description} onChange={set("description")} placeholder="Describe what you noticed and when it happened..." />
+      <div style={{ display: "flex", gap: ".75rem", justifyContent: "flex-end" }}>
+        <Button variant="outline" onClick={onClose} disabled={saving}>Cancel</Button>
+        <Button variant="danger" icon={LuTriangleAlert} onClick={submit} disabled={saving}>{saving ? "Submitting…" : "Submit report"}</Button>
+      </div>
+    </Modal>
   );
 }
 
@@ -331,7 +380,21 @@ function LabAnnouncements() {
 
 export function StudentPortal({ active }) {
   if (active === "equipment") return <EquipmentList />;
+  if (active === "issues") return <MyIssueReports />;
   if (active === "booking") return <BookingForm />;
   if (active === "announcements") return <LabAnnouncements />;
   return <UsageHistory />;
+}
+
+function MyIssueReports() {
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    getIssueReports(true).then((response) => setReports(response.data || [])).catch(() => {}).finally(() => setLoading(false));
+  }, []);
+  return <div className="fade-up">
+    <h2 style={{ margin: 0, fontSize: "1.35rem", color: T.navyDark, marginBottom: ".35rem" }}>My issue reports</h2>
+    <p style={{ color: T.textLight, fontSize: ".9rem", marginBottom: "1.2rem" }}>Reports submitted from the equipment page are tracked by lab staff.</p>
+    {loading ? <p>Loading reports…</p> : reports.length === 0 ? <Card style={{ padding: "1.2rem", color: T.textMid }}>You have not submitted an issue report.</Card> : <PTable cols={["Equipment", "Type", "Description", "Urgency", "Status", "Staff notes"]} rows={reports.map((report) => [report.equipment_name, report.issue_type, report.description, report.urgency, <Badge key={`status-${report.id}`} label={report.status} tone={report.status === "Resolved" ? "Active" : "Pending"} />, report.admin_notes || "—"])} />}
+  </div>;
 }

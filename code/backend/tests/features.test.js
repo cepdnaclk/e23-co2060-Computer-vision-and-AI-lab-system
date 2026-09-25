@@ -6,6 +6,7 @@ const pool = { query: async () => { throw new Error("Unexpected query"); } };
 require.cache[require.resolve("../config/db")] = { exports: pool, loaded: true };
 require.cache[require.resolve("../services/emailService")] = { exports: {}, loaded: true };
 const projects = require("../controllers/projectsController");
+const issues = require("../controllers/issueController");
 const { getBookings } = require("../controllers/bookingController");
 const { getAnalytics } = require("../controllers/analyticsController");
 function response() {
@@ -61,4 +62,28 @@ test("analytics returns numeric counts and resource usage including rescheduled 
   assert.equal(res.body.bookings.rescheduled, 1);
   assert.equal(res.body.users.total, 2);
   assert.equal(res.body.usage[0].resource, "Server");
+});
+
+test("issue reports reject unknown equipment before creating a ticket", async () => {
+  const queries = [];
+  pool.query = async (sql, values) => {
+    queries.push({ sql, values });
+    return { rows: [] };
+  };
+  const res = response();
+  await issues.createIssue({ user: { id: 7 }, body: { equipmentId: 999, issueType: "Damage", description: "Broken lens" } }, res);
+  assert.equal(res.code, 404);
+  assert.equal(queries.length, 1);
+  assert.match(queries[0].sql, /FROM inventory/);
+});
+
+test("student issue reports are always scoped to the authenticated user", async () => {
+  pool.query = async (sql, values) => {
+    assert.match(sql, /WHERE r\.reported_by = \$1/);
+    assert.deepEqual(values, [42]);
+    return { rows: [{ id: 1, reported_by: 42 }] };
+  };
+  const res = response();
+  await issues.getIssues({ user: { id: 42, role: "student" }, query: {} }, res);
+  assert.equal(res.body[0].reported_by, 42);
 });

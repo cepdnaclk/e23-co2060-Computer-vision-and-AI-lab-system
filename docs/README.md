@@ -1,6 +1,6 @@
 ---
-layout: home
-permalink: index.html
+layout: default
+permalink: README.html
 
 repository-name: e23-co2060-Computer-vision-and-AI-lab-system
 title: Computer Vision & AI Lab System

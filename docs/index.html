@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CV & AI Lab System | Univ. of Peradeniya</title>
+    <meta name="description" content="A unified web platform for the Computer Vision & AI Lab at the University of Peradeniya — combining public research showcase with internal equipment booking and GPU scheduling.">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,13 +45,78 @@
 
                 <!-- Tech Stack Badges -->
                 <div class="tech-stack" data-aos="fade-up" data-aos-delay="400">
-                    <span class="badge"><i data-lucide="atom"></i> React</span>
+                    <span class="badge"><i data-lucide="atom"></i> React 19</span>
                     <span class="badge"><i data-lucide="zap"></i> Vite</span>
                     <span class="badge"><i data-lucide="server"></i> Node.js</span>
-                    <span class="badge"><i data-lucide="box"></i> Express</span>
+                    <span class="badge"><i data-lucide="box"></i> Express v5</span>
                     <span class="badge"><i data-lucide="database"></i> PostgreSQL</span>
-                    <span class="badge"><i data-lucide="key"></i> JWT Auth</span>
+                    <span class="badge"><i data-lucide="key"></i> JWT + OAuth</span>
                     <span class="badge"><i data-lucide="mail"></i> Nodemailer</span>
+                    <span class="badge"><i data-lucide="send"></i> Axios</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Introduction / Problem Statement -->
+        <section id="introduction" class="intro-section">
+            <div class="container">
+                <h2 class="section-heading" data-aos="fade-up">Introduction</h2>
+                <p class="section-sub" data-aos="fade-up" data-aos-delay="100">Why this project exists</p>
+
+                <div class="intro-content" data-aos="fade-up" data-aos-delay="200">
+                    <div class="intro-block glass">
+                        <div class="feature-icon"><i data-lucide="alert-triangle"></i></div>
+                        <h3>The Problem</h3>
+                        <p>The Computer Vision & AI Lab at the University of Peradeniya relied on <strong>manual logbooks</strong> and <strong>spreadsheets</strong> for equipment tracking, booking requests, and resource allocation. High-value assets — drones, depth cameras, GPU servers — had no centralized availability system, leading to double-bookings, lost requests, and poor visibility of lab activities.</p>
+                    </div>
+                    <div class="intro-block glass">
+                        <div class="feature-icon"><i data-lucide="lightbulb"></i></div>
+                        <h3>Our Solution</h3>
+                        <p>We built a <strong>dual-purpose web platform</strong> that combines a beautiful public portal (showcasing research, publications, team profiles, and news) with a <strong>secure internal management system</strong> featuring role-based dashboards, automated equipment booking workflows, GPU scheduling, email OTP verification, and real-time analytics.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Screenshots Gallery -->
+        <section id="screenshots" class="screenshots-section">
+            <div class="container">
+                <h2 class="section-heading" data-aos="fade-up">Application Screenshots</h2>
+                <p class="section-sub" data-aos="fade-up" data-aos-delay="100">Live captures from the deployed platform</p>
+
+                <div class="screenshot-grid">
+                    <div class="screenshot-card" data-aos="fade-up" data-aos-delay="150">
+                        <img src="images/screenshots/hero.png" alt="Homepage Hero Section" loading="lazy">
+                        <div class="screenshot-label">Homepage — Hero & Navigation</div>
+                    </div>
+                    <div class="screenshot-card" data-aos="fade-up" data-aos-delay="200">
+                        <img src="images/screenshots/portals.png" alt="Portal Selection" loading="lazy">
+                        <div class="screenshot-label">Role-Based Portal Selection</div>
+                    </div>
+                    <div class="screenshot-card" data-aos="fade-up" data-aos-delay="250">
+                        <img src="images/screenshots/research.png" alt="Research Showcase" loading="lazy">
+                        <div class="screenshot-label">Research Projects Showcase</div>
+                    </div>
+                    <div class="screenshot-card" data-aos="fade-up" data-aos-delay="300">
+                        <img src="images/screenshots/projects.png" alt="Projects Page" loading="lazy">
+                        <div class="screenshot-label">Projects & Team Profiles</div>
+                    </div>
+                    <div class="screenshot-card" data-aos="fade-up" data-aos-delay="350">
+                        <img src="images/screenshots/facilities.png" alt="Facilities & Equipment" loading="lazy">
+                        <div class="screenshot-label">Facilities & Equipment Catalog</div>
+                    </div>
+                    <div class="screenshot-card" data-aos="fade-up" data-aos-delay="400">
+                        <img src="images/screenshots/publications.png" alt="Publications Page" loading="lazy">
+                        <div class="screenshot-label">Publications & News Feed</div>
+                    </div>
+                    <div class="screenshot-card" data-aos="fade-up" data-aos-delay="450">
+                        <img src="images/screenshots/news.png" alt="News & Events" loading="lazy">
+                        <div class="screenshot-label">News & Events Updates</div>
+                    </div>
+                    <div class="screenshot-card" data-aos="fade-up" data-aos-delay="500">
+                        <img src="images/screenshots/about.png" alt="About Section" loading="lazy">
+                        <div class="screenshot-label">About the Lab</div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -65,22 +131,159 @@
                     <div class="feature-card glass" data-aos="fade-up" data-aos-delay="200">
                         <div class="feature-icon"><i data-lucide="globe"></i></div>
                         <h3>Public Portal</h3>
-                        <p>Dynamic showcase of ongoing research, publications, and team achievements to foster collaboration.</p>
+                        <p>8 dedicated pages — Home, Research, Publications, People, Facilities, Services, News & Events, Contact — dynamically rendered from the database.</p>
                     </div>
                     <div class="feature-card glass" data-aos="fade-up" data-aos-delay="300">
                         <div class="feature-icon"><i data-lucide="calendar-check"></i></div>
-                        <h3>Resource Booking</h3>
-                        <p>Real-time availability checks and reservations for high-value assets like drones and sensors.</p>
+                        <h3>Equipment Booking</h3>
+                        <p>End-to-end booking workflow: students request equipment, officers review & approve/reject, automated email notifications at every stage.</p>
                     </div>
                     <div class="feature-card glass" data-aos="fade-up" data-aos-delay="400">
                         <div class="feature-icon"><i data-lucide="cpu"></i></div>
                         <h3>GPU Scheduling</h3>
-                        <p>Job slot management for shared computing resources such as NVIDIA A100/H100 clusters.</p>
+                        <p>Job slot management for NVIDIA A100/H100 GPU clusters with time-slot reservation and conflict detection.</p>
                     </div>
                     <div class="feature-card glass" data-aos="fade-up" data-aos-delay="500">
                         <div class="feature-icon"><i data-lucide="shield"></i></div>
-                        <h3>Role-Based Access</h3>
-                        <p>Secure operations tailored for students, officers, staff, and administrators.</p>
+                        <h3>Role-Based Access (RBAC)</h3>
+                        <p>Four distinct roles — Student, Officer, Staff, Admin — each with dedicated dashboards and permission-gated API endpoints.</p>
+                    </div>
+                    <div class="feature-card glass" data-aos="fade-up" data-aos-delay="600">
+                        <div class="feature-icon"><i data-lucide="key"></i></div>
+                        <h3>Secure Authentication</h3>
+                        <p>JWT-based session management, Google OAuth single sign-on, and email OTP verification for account registration and password recovery.</p>
+                    </div>
+                    <div class="feature-card glass" data-aos="fade-up" data-aos-delay="700">
+                        <div class="feature-icon"><i data-lucide="bar-chart-3"></i></div>
+                        <h3>Analytics Dashboard</h3>
+                        <p>Admin-only analytics panel with booking metrics, resource utilization trends, and user activity insights.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Solution Architecture -->
+        <section id="architecture" class="architecture-section">
+            <div class="container">
+                <h2 class="section-heading" data-aos="fade-up">Solution Architecture</h2>
+                <p class="section-sub" data-aos="fade-up" data-aos-delay="100">Three-tier client-server architecture deployed across cloud platforms</p>
+
+                <div class="arch-diagram glass" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="arch-row">
+                        <div class="arch-box arch-frontend">
+                            <h4><i data-lucide="monitor"></i> Frontend</h4>
+                            <span>React 19 + Vite</span>
+                            <div class="arch-details">Public Portal · Internal Portals · SPA Router</div>
+                            <div class="arch-deploy">Deployed on <strong>Vercel</strong></div>
+                        </div>
+                    </div>
+                    <div class="arch-arrow" data-aos="fade-down" data-aos-delay="300">
+                        <i data-lucide="arrow-down"></i>
+                        <span>REST API (Axios)</span>
+                        <i data-lucide="arrow-down"></i>
+                    </div>
+                    <div class="arch-row">
+                        <div class="arch-box arch-backend">
+                            <h4><i data-lucide="server"></i> Backend</h4>
+                            <span>Node.js + Express v5</span>
+                            <div class="arch-details">JWT + OAuth · Nodemailer · RBAC Middleware</div>
+                            <div class="arch-deploy">Deployed on <strong>Northflank</strong></div>
+                        </div>
+                    </div>
+                    <div class="arch-arrow" data-aos="fade-down" data-aos-delay="400">
+                        <i data-lucide="arrow-down"></i>
+                        <span>SQL Queries (pg)</span>
+                        <i data-lucide="arrow-down"></i>
+                    </div>
+                    <div class="arch-row">
+                        <div class="arch-box arch-database">
+                            <h4><i data-lucide="database"></i> Database</h4>
+                            <span>PostgreSQL</span>
+                            <div class="arch-details">Users · Inventory · Reservations · News · Projects · People</div>
+                            <div class="arch-deploy">Hosted on <strong>Neon</strong> (serverless)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Database Schema -->
+        <section id="database" class="database-section">
+            <div class="container">
+                <h2 class="section-heading" data-aos="fade-up">Database Design</h2>
+                <p class="section-sub" data-aos="fade-up" data-aos-delay="100">8 relational tables powering the entire system</p>
+
+                <div class="db-grid">
+                    <div class="db-card glass" data-aos="fade-up" data-aos-delay="200">
+                        <h4><i data-lucide="users"></i> users</h4>
+                        <p>Stores accounts with hashed passwords and roles (student, officer, staff, admin).</p>
+                    </div>
+                    <div class="db-card glass" data-aos="fade-up" data-aos-delay="250">
+                        <h4><i data-lucide="package"></i> inventory</h4>
+                        <p>Equipment catalog — names, categories, specifications, fees, availability status, and images.</p>
+                    </div>
+                    <div class="db-card glass" data-aos="fade-up" data-aos-delay="300">
+                        <h4><i data-lucide="calendar"></i> reservations</h4>
+                        <p>Booking requests with user references, time slots, purpose, approval status, and admin notes.</p>
+                    </div>
+                    <div class="db-card glass" data-aos="fade-up" data-aos-delay="350">
+                        <h4><i data-lucide="user-check"></i> people</h4>
+                        <p>Lab member profiles — staff and students, with titles, departments, and research areas.</p>
+                    </div>
+                    <div class="db-card glass" data-aos="fade-up" data-aos-delay="400">
+                        <h4><i data-lucide="newspaper"></i> news</h4>
+                        <p>Lab announcements, achievements, and events with rich media support.</p>
+                    </div>
+                    <div class="db-card glass" data-aos="fade-up" data-aos-delay="450">
+                        <h4><i data-lucide="folder-open"></i> projects</h4>
+                        <p>Research projects with leads, supervisors, team members, tags, status, and demo links.</p>
+                    </div>
+                    <div class="db-card glass" data-aos="fade-up" data-aos-delay="500">
+                        <h4><i data-lucide="shield-check"></i> otp_verifications</h4>
+                        <p>Temporary OTP storage for the registration flow with expiry timestamps.</p>
+                    </div>
+                    <div class="db-card glass" data-aos="fade-up" data-aos-delay="550">
+                        <h4><i data-lucide="lock"></i> password_reset_otp</h4>
+                        <p>Secure password reset tokens linked to email addresses with time-limited validity.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Endpoints -->
+        <section id="api" class="api-section">
+            <div class="container">
+                <h2 class="section-heading" data-aos="fade-up">REST API Endpoints</h2>
+                <p class="section-sub" data-aos="fade-up" data-aos-delay="100">15+ endpoints across 7 route groups</p>
+
+                <div class="api-grid" data-aos="fade-up" data-aos-delay="200">
+                    <div class="api-group glass">
+                        <h4>/api/auth</h4>
+                        <div class="api-endpoint"><span class="method post">POST</span> /register/initiate</div>
+                        <div class="api-endpoint"><span class="method post">POST</span> /register/verify</div>
+                        <div class="api-endpoint"><span class="method post">POST</span> /login</div>
+                        <div class="api-endpoint"><span class="method post">POST</span> /google</div>
+                        <div class="api-endpoint"><span class="method post">POST</span> /forgot-password/reset</div>
+                    </div>
+                    <div class="api-group glass">
+                        <h4>/api/items</h4>
+                        <div class="api-endpoint"><span class="method get">GET</span> / — List all equipment</div>
+                        <div class="api-endpoint"><span class="method post">POST</span> / — Add item (admin)</div>
+                        <div class="api-endpoint"><span class="method put">PUT</span> /:id — Update item</div>
+                        <div class="api-endpoint"><span class="method delete">DELETE</span> /:id — Delete item</div>
+                    </div>
+                    <div class="api-group glass">
+                        <h4>/api/bookings</h4>
+                        <div class="api-endpoint"><span class="method get">GET</span> / — View bookings</div>
+                        <div class="api-endpoint"><span class="method post">POST</span> / — Create booking</div>
+                        <div class="api-endpoint"><span class="method put">PUT</span> /:id/status — Approve/Reject</div>
+                    </div>
+                    <div class="api-group glass">
+                        <h4>More Routes</h4>
+                        <div class="api-endpoint"><span class="method get">GET</span> /api/users — List users</div>
+                        <div class="api-endpoint"><span class="method get">GET</span> /api/people — Lab profiles</div>
+                        <div class="api-endpoint"><span class="method get">GET</span> /api/news — News & events</div>
+                        <div class="api-endpoint"><span class="method get">GET</span> /api/analytics — Metrics</div>
                     </div>
                 </div>
             </div>
@@ -96,18 +299,48 @@
                     <div class="tree-container">
                         System/
                         <span class="tree-branch">├──</span> <span class="tree-node">backend/</span> <span class="tree-comment"># Node.js + Express API</span>
-                        <span class="tree-branch">│   ├──</span> <span class="tree-node">controllers/</span> <span class="tree-comment"># Request handlers</span>
-                        <span class="tree-branch">│   ├──</span> <span class="tree-node">middleware/</span> <span class="tree-comment"># JWT auth & validation</span>
-                        <span class="tree-branch">│   ├──</span> <span class="tree-node">routes/</span> <span class="tree-comment"># API endpoint definitions</span>
-                        <span class="tree-branch">│   ├──</span> <span class="tree-node">services/</span> <span class="tree-comment"># Email & business logic</span>
-                        <span class="tree-branch">│   └──</span> <span class="tree-node">sql/</span> <span class="tree-comment"># PostgreSQL schemas</span>
-                        <span class="tree-branch">└──</span> <span class="tree-node">frontend/</span> <span class="tree-comment"># React + Vite App</span>
+                        <span class="tree-branch">│   ├──</span> <span class="tree-node">config/</span> <span class="tree-comment"># PostgreSQL pool connection</span>
+                        <span class="tree-branch">│   ├──</span> <span class="tree-node">controllers/</span> <span class="tree-comment"># auth, booking, inventory, users, news, people, analytics</span>
+                        <span class="tree-branch">│   ├──</span> <span class="tree-node">middleware/</span> <span class="tree-comment"># JWT verification middleware</span>
+                        <span class="tree-branch">│   ├──</span> <span class="tree-node">routes/</span> <span class="tree-comment"># 7 route modules</span>
+                        <span class="tree-branch">│   ├──</span> <span class="tree-node">services/</span> <span class="tree-comment"># OTP email & notification service</span>
+                        <span class="tree-branch">│   ├──</span> <span class="tree-node">sql/</span> <span class="tree-comment"># schema.sql (8 tables + seed data)</span>
+                        <span class="tree-branch">│   └──</span> <span class="tree-node">index.js</span> <span class="tree-comment"># Express entry point (port 5000)</span>
+                        <span class="tree-branch">└──</span> <span class="tree-node">frontend/</span> <span class="tree-comment"># React + Vite SPA</span>
                         <span class="tree-branch">    ├──</span> <span class="tree-node">src/</span>
-                        <span class="tree-branch">    │   ├──</span> <span class="tree-node">components/</span> <span class="tree-comment"># Reusable UI elements</span>
-                        <span class="tree-branch">    │   ├──</span> <span class="tree-node">pages/</span> <span class="tree-comment"># Public facing pages</span>
-                        <span class="tree-branch">    │   ├──</span> <span class="tree-node">portal/</span> <span class="tree-comment"># Role-based dashboards</span>
-                        <span class="tree-branch">    │   ├──</span> <span class="tree-node">services/</span> <span class="tree-comment"># Axios API integration</span>
-                        <span class="tree-branch">    │   └──</span> <span class="tree-node">styles/</span> <span class="tree-comment"># Theming & CSS</span>
+                        <span class="tree-branch">    │   ├──</span> <span class="tree-node">components/</span> <span class="tree-comment"># Layout, Modals, UI primitives</span>
+                        <span class="tree-branch">    │   ├──</span> <span class="tree-node">pages/</span> <span class="tree-comment"># 11 public pages</span>
+                        <span class="tree-branch">    │   ├──</span> <span class="tree-node">portal/</span> <span class="tree-comment"># Admin, Officer, Staff, Student dashboards</span>
+                        <span class="tree-branch">    │   ├──</span> <span class="tree-node">services/</span> <span class="tree-comment"># Axios API wrappers</span>
+                        <span class="tree-branch">    │   ├──</span> <span class="tree-node">data/</span> <span class="tree-comment"># Static lab data & menu definitions</span>
+                        <span class="tree-branch">    │   └──</span> <span class="tree-node">styles/</span> <span class="tree-comment"># CSS theming & design tokens</span>
+                        <span class="tree-branch">    └──</span> <span class="tree-node">App.jsx</span> <span class="tree-comment"># Root component & state router</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testing -->
+        <section id="testing" class="testing-section">
+            <div class="container">
+                <h2 class="section-heading" data-aos="fade-up">Testing</h2>
+                <p class="section-sub" data-aos="fade-up" data-aos-delay="100">Comprehensive validation across all layers</p>
+
+                <div class="feature-grid">
+                    <div class="feature-card glass" data-aos="fade-up" data-aos-delay="200">
+                        <div class="feature-icon"><i data-lucide="terminal"></i></div>
+                        <h3>Backend API Testing</h3>
+                        <p>All 15+ REST endpoints tested via test scripts — authentication flows, booking CRUD, inventory management, OTP delivery, and role-based access validation.</p>
+                    </div>
+                    <div class="feature-card glass" data-aos="fade-up" data-aos-delay="300">
+                        <div class="feature-icon"><i data-lucide="layout"></i></div>
+                        <h3>Frontend Testing</h3>
+                        <p>Role-based routing tested for all four user types. Protected routes verified. Booking forms validated for date conflicts. Google OAuth end-to-end tested. Responsive layouts across desktop and mobile.</p>
+                    </div>
+                    <div class="feature-card glass" data-aos="fade-up" data-aos-delay="400">
+                        <div class="feature-icon"><i data-lucide="database"></i></div>
+                        <h3>Database Testing</h3>
+                        <p>Schema correctness verified against Neon PostgreSQL. Seed scripts tested for conflict-free population. SSL connections validated with <code>sslmode=require</code>.</p>
                     </div>
                 </div>
             </div>
@@ -117,7 +350,7 @@
         <section id="team" class="team">
             <div class="container">
                 <h2 class="section-heading" data-aos="fade-up">Team Bug Slayer</h2>
-                <p class="section-sub" data-aos="fade-up" data-aos-delay="100">The developers behind the CV & AI Lab System.</p>
+                <p class="section-sub" data-aos="fade-up" data-aos-delay="100">E/23 Batch · Department of Computer Engineering</p>
 
                 <div class="team-grid">
                     <div class="team-card glass" data-aos="fade-up" data-aos-delay="200">
@@ -143,13 +376,16 @@
                 </div>
             </div>
         </section>
-        
+
         <!-- Links Section -->
-        <section id="links" class="links-section" style="padding-bottom: 80px;">
+        <section id="links" class="links-section">
             <div class="container" style="text-align: center;">
-                <div class="tech-stack" data-aos="zoom-in" data-aos-delay="200">
-                    <a href="README.html" class="badge" style="text-decoration: none;"><i data-lucide="file-text"></i> Full Documentation</a>
-                    <a href="https://github.com/cepdnaclk/e23-co2060-Computer-vision-and-AI-lab-system" class="badge" style="text-decoration: none;"><i data-lucide="github"></i> Source Code</a>
+                <h2 class="section-heading" data-aos="fade-up">Links</h2>
+                <div class="tech-stack" data-aos="zoom-in" data-aos-delay="200" style="margin-top: 30px;">
+                    <a href="https://e23-co2060-computer-vision-and-ai-l.vercel.app/" class="badge link-badge" target="_blank"><i data-lucide="external-link"></i> Live Demo</a>
+                    <a href="https://github.com/cepdnaclk/e23-co2060-Computer-vision-and-AI-lab-system" class="badge link-badge" target="_blank"><i data-lucide="github"></i> Source Code</a>
+                    <a href="http://www.ce.pdn.ac.lk/" class="badge link-badge" target="_blank"><i data-lucide="school"></i> Department</a>
+                    <a href="https://eng.pdn.ac.lk/" class="badge link-badge" target="_blank"><i data-lucide="landmark"></i> University</a>
                 </div>
             </div>
         </section>
